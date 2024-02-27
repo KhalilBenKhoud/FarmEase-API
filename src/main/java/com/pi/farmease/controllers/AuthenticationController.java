@@ -4,7 +4,9 @@ import com.pi.farmease.dto.requests.AuthenticationRequest;
 import com.pi.farmease.dto.requests.RegisterRequest;
 import com.pi.farmease.dto.responses.AuthenticationResponse;
 import com.pi.farmease.dto.responses.MessageResponse;
+import com.pi.farmease.entities.User;
 import com.pi.farmease.services.AuthenticationService;
+import com.pi.farmease.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -22,7 +25,7 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService ;
-
+    private final UserService userService ;
 
     @GetMapping("/test")
     public String test() {
@@ -104,5 +107,15 @@ public class AuthenticationController {
 
     }
 
+   @GetMapping("/current")
+    public ResponseEntity<?> getCurrent(Principal connectedUser) {
+       final User responseBody ;
+        try {
+            responseBody = userService.getCurrentUser(connectedUser);
+         }catch(Exception e) {
+             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
+         }
+         return ResponseEntity.ok().body(responseBody) ;
+   }
 
 }

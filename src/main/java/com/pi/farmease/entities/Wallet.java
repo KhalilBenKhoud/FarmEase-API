@@ -1,6 +1,7 @@
 package com.pi.farmease.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pi.farmease.entities.enumerations.WalletStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,7 @@ public class Wallet {
     private String ownerName ;
 
     @OneToOne(mappedBy = "wallet")
+    @JsonBackReference
     private User user ;
 
 }

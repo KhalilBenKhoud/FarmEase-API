@@ -16,10 +16,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JwetServiceImp implements JwtService{
+public class JwtServiceImp implements JwtService{
     @Value("${SIGN_IN_KEY}")
     private String SECRET_KEY ;
-    private long accessExpiration = 1000*60*15 ; // in millis : 15 minute
+    private long accessExpiration = 1000*60 *15; // in millis : 15 minute
     private long refreshExpiration = 1000*60*60*24*7 ; // on millis : 7 days
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
