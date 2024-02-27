@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -43,6 +44,9 @@ public class User implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Wallet wallet ;
+
+    @OneToMany(mappedBy = "user")
+    private List<Insurance> insurances ;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
