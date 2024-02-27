@@ -1,6 +1,7 @@
 package com.pi.farmease.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pi.farmease.entities.enumerations.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class User implements UserDetails {
 
     @Id
@@ -42,6 +44,7 @@ public class User implements UserDetails {
     private Date registrationDate = new Date() ;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Wallet wallet ;
 
     @Override
