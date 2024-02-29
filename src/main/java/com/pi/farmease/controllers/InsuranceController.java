@@ -21,7 +21,7 @@ public class InsuranceController {
 
     private final InsuranceService insuranceService;
 
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<List<Insurance>> getAllInsurances() {
         List<Insurance> insurances = insuranceService.getAllInsurances();
         return ResponseEntity.ok(insurances);
@@ -43,7 +43,7 @@ public class InsuranceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInsurance);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Insurance> updateInsurance(@PathVariable("id") Integer id, @RequestBody Insurance insuranceDetails) {
         Insurance existingInsurance = insuranceService.getInsuranceById(id);
         if (existingInsurance != null) {
@@ -55,7 +55,7 @@ public class InsuranceController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteInsurance(@PathVariable("id") Integer id) {
         Insurance existingInsurance = insuranceService.getInsuranceById(id);
         if (existingInsurance != null) {
