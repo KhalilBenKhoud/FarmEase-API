@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface InsuranceService {
     List<Insurance> getAllInsurances();
-    Optional<Insurance> getInsuranceById(Integer id);
+    Insurance getInsuranceById(Integer id);
     Insurance saveInsurance(Insurance insurance);
     Insurance updateInsurance(Insurance insurance);
     void deleteInsurance(Integer id);

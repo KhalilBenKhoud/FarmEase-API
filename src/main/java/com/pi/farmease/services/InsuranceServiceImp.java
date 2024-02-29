@@ -2,6 +2,7 @@ package com.pi.farmease.services;
 
 import com.pi.farmease.entities.Insurance;
 import com.pi.farmease.dao.InsuranceRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +22,8 @@ public class InsuranceServiceImp {
     }
 
     // Méthode pour récupérer une assurance par son ID
-    public Optional<Insurance> getInsuranceById(Integer id) {
-        return insuranceRepository.findById(id);
+    public Insurance getInsuranceById(Integer id) {
+        return insuranceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Insurance not found with id: " + id));
     }
 
     // Méthode pour enregistrer une assurance
