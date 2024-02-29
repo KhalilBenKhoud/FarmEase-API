@@ -11,32 +11,37 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class InsuranceServiceImp {
+public class InsuranceServiceImp implements InsuranceService{
 
     private final InsuranceRepository insuranceRepository;
 
 
     // Méthode pour récupérer toutes les assurances
+    @Override
     public List<Insurance> getAllInsurances() {
         return insuranceRepository.findAll();
     }
 
     // Méthode pour récupérer une assurance par son ID
+    @Override
     public Insurance getInsuranceById(Integer id) {
         return insuranceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Insurance not found with id: " + id));
     }
 
     // Méthode pour enregistrer une assurance
+    @Override
     public Insurance saveInsurance(Insurance insurance) {
         return insuranceRepository.save(insurance);
     }
 
     // Méthode pour mettre à jour une assurance
+    @Override
     public Insurance updateInsurance(Insurance insurance) {
         return insuranceRepository.save(insurance);
     }
 
     // Méthode pour supprimer une assurance
+    @Override
     public void deleteInsurance(Integer id) {
         insuranceRepository.deleteById(id);
     }

@@ -19,7 +19,7 @@ import java.util.List;
 public class InsuranceController {
 
 
-    InsuranceService insuranceService;
+    private final InsuranceService insuranceService;
 
     @GetMapping
     public ResponseEntity<List<Insurance>> getAllInsurances() {
@@ -37,7 +37,7 @@ public class InsuranceController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Insurance> createInsurance(@RequestBody Insurance insurance) {
         Insurance createdInsurance = insuranceService.saveInsurance(insurance);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInsurance);
