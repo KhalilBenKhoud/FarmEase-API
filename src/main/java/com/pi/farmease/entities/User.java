@@ -46,7 +46,7 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     @JsonManagedReference
     private Wallet wallet ;
-
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Post> posts ;
 

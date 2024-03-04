@@ -107,15 +107,6 @@ public class AuthenticationController {
 
     }
 
-   @GetMapping("/current")
-    public ResponseEntity<?> getCurrent(Principal connectedUser) {
-       final User responseBody ;
-        try {
-            responseBody = userService.getCurrentUser(connectedUser);
-         }catch(Exception e) {
-             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
-         }
-         return ResponseEntity.ok().body(responseBody) ;
-   }
+
 
 }

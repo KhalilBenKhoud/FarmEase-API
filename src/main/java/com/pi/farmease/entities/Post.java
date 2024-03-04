@@ -1,4 +1,5 @@
 package com.pi.farmease.entities;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,7 @@ public class Post {
     private Set<Comment> Commentaire;
 
     @ManyToOne
+    @JsonBackReference
     private User user ;
 
 

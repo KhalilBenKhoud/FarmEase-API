@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +30,11 @@ public class PostServiceImpl implements PostService {
 
         postRepository.save(post) ;
     }
+    public List<Post> getPost()
+    {
+        return postRepository.findAll() ;
+    }
+
 
     @Override
     public void updatePost(Post post, Long id) {
