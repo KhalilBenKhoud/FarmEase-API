@@ -34,24 +34,24 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+       final AuthenticationResponse responseBody ;
+       final ResponseCookie jwtCookie ;
         try {
-            AuthenticationResponse responseBody = authenticationService.register(request) ;
+            responseBody = authenticationService.register(request) ;
 
-            ResponseCookie jwtCookie = ResponseCookie
+           jwtCookie = ResponseCookie
                     .from("jwtCookie", responseBody.getRefreshToken())
                     .path(  "/api/v1/auth/refresh_token").maxAge(7 * 24 * 60 * 60)
                     .httpOnly(true).build();
 
             responseBody.setRefreshToken("hi ! you can find me in the cookie");
 
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(responseBody);
         }
         catch(Exception e) {
-            System.out.println(e.getMessage());
-            throw e ;
+           return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
         }
-
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(responseBody);
     }
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
@@ -107,15 +107,6 @@ public class AuthenticationController {
 
     }
 
-   @GetMapping("/current")
-    public ResponseEntity<?> getCurrent(Principal connectedUser) {
-       final User responseBody ;
-        try {
-            responseBody = userService.getCurrentUser(connectedUser);
-         }catch(Exception e) {
-             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
-         }
-         return ResponseEntity.ok().body(responseBody) ;
-   }
+
 
 }
