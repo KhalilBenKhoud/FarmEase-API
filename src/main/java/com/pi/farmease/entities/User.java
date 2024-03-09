@@ -47,6 +47,14 @@ public class User implements UserDetails {
     @JsonManagedReference
     private Wallet wallet ;
 
+    @OneToMany(mappedBy = "creator")
+    @JsonManagedReference
+    private List<Project> createdProjects;
+
+    @OneToMany(mappedBy = "investor")
+    @JsonManagedReference
+    private List<Investment> investments;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name())) ;
