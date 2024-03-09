@@ -18,14 +18,18 @@ public class Performance implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String projectTitle;
+
     private Double netIncome;
+
+    private Double currentMarketValue;
 
     private Integer year;
 
     // Additional fields for performance calculations
     private Double totalInvestment;
-    private Double currentMarketValue;
-    @ManyToOne
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "project_id")
     private Project project;
 }

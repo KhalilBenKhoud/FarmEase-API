@@ -1,5 +1,7 @@
 package com.pi.farmease.services;
 
+import com.pi.farmease.dao.PerformanceRepository;
+import com.pi.farmease.entities.Performance;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserService userService ;
+    private final PerformanceRepository performanceRepository;
 
 
     @Override
@@ -28,14 +31,24 @@ public class ProjectServiceImpl implements ProjectService {
                 .title(requestBody.getTitle())
                 .description(requestBody.getDescription())
                 .deadline(requestBody.getDeadline())
+                .marketValue(requestBody.getMarketValue())
+                .netIncomeLastYear(requestBody.getNetIncomeLastYear())
                 .equityOffered(requestBody.getEquityOffered())
                 .goalAmount(requestBody.getGoalAmount())
                 .projectCategory(requestBody.getProjectCategory())
                 .imageUrl(requestBody.getImageUrl())
                 .build();
+        Performance performance = Performance.builder()
+                .project(project)
+                .currentMarketValue(project.getMarketValue())
+                .netIncome(project.getNetIncomeLastYear()).build();
+
+
 
 
         projectRepository.save(project) ;
+        performanceRepository.save(performance);
+
         return projectRepository.save(project);
     }
 

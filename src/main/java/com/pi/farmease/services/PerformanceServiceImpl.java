@@ -17,11 +17,6 @@ public class PerformanceServiceImpl implements PerformanceService {
     private PerformanceRepository performanceRepository;
 
     @Override
-    public Performance createPerformance(Performance performance) {
-        return performanceRepository.save(performance);
-    }
-
-    @Override
     public Optional<Performance> getPerformanceByProject(Long projectId) {
         Project project = new Project();
         project.setId(projectId);

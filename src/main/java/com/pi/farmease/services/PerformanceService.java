@@ -8,7 +8,6 @@ import java.util.Optional;
 
 public interface PerformanceService {
 
-    Performance createPerformance(Performance performance);
 
     Optional<Performance> getPerformanceByProject(Long projectId);
 

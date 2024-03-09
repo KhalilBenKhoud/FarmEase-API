@@ -5,7 +5,6 @@ import com.pi.farmease.entities.Wallet;
 import com.pi.farmease.exceptions.BusinessException;
 import com.pi.farmease.exceptions.InsufficientBalanceException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,15 +22,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class InvestmentServiceImpl implements InvestmentService {
     @Autowired
-
     private InvestmentRepository investmentRepository;
     @Autowired
     private WalletRepository walletRepository;
     @Autowired
-     UserService userService;
+    private UserService userService;
 
     @Override
     public Investment createInvestment(Investment requestBody, Principal connected) {
