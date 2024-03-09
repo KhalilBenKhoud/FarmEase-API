@@ -6,6 +6,7 @@ import com.pi.farmease.entities.enumerations.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,15 +29,22 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
 
+    @NonNull
     private String firstname ;
+    @NonNull
     private String lastname ;
+    @NonNull
     private String password ;
 
+    @NonNull
     @Column(unique = true)
     private String email ;
 
+    @NonNull
     @Enumerated(EnumType.STRING)
     private Role role ;
+
+    private String imageName ;
 
     private boolean enabled  ;
 

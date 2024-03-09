@@ -12,6 +12,7 @@ public class TestController {
     @GetMapping("/test")
     public ResponseEntity<String> test() {
             return ResponseEntity.ok().body("from test") ;
+
     }
 
 }
