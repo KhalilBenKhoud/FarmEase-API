@@ -23,10 +23,12 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+
+
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService ;
-    private final UserService userService ;
+
 
     @GetMapping("/test")
     public String test() {
@@ -84,14 +86,16 @@ public class AuthenticationController {
         ResponseCookie jwtCookie = ResponseCookie
                 .from("jwtCookie", responseBody.getRefreshToken())
                 .path("/api/v1/auth/refresh_token").maxAge(7 * 24 * 60 * 60)
-                .httpOnly(true).build();
+                .httpOnly(true)
+                .build();
         responseBody.setRefreshToken("hi ! you can find me in the cookie");
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(responseBody);
     }
 
-    @PostMapping("/refresh_token")
+    @GetMapping("/refresh_token")
     public ResponseEntity<AuthenticationResponse> refresh_token(HttpServletRequest request) throws IOException {
         Cookie cookie = WebUtils.getCookie(request, "jwtCookie");
         final String refreshToken ;
@@ -103,7 +107,8 @@ public class AuthenticationController {
             ResponseCookie jwtCookie = ResponseCookie
                     .from("jwtCookie", responseBody.getRefreshToken())
                     .path("/api/v1/auth/refresh_token").maxAge(7 * 24 * 60 * 60)
-                    .httpOnly(true).build();
+                    .httpOnly(true)
+                    .build();
             responseBody.setRefreshToken("hi ! you can find me in the cookie");
 
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
