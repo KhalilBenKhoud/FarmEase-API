@@ -1,14 +1,13 @@
 package com.pi.farmease.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Data
 public class Application {
     @Id
@@ -17,11 +16,16 @@ public class Application {
     private String nom_application ;
     private String prenom_application ;
     private long interesting_rate_application;
-    private String programme_description_application;
+    private String description_application;
+    private long etat_application;
+
 
     @ToString.Exclude
     @ManyToOne
     Mortgage mortgage;
+    @ManyToOne
+    @JsonBackReference
+    private User user ;
 
 
 

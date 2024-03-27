@@ -47,8 +47,12 @@ public class User implements UserDetails {
     @JsonManagedReference
     private Wallet wallet ;
     @JsonManagedReference
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Post> posts ;
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Comment> comments ;
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Application> applications ;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -8,11 +8,16 @@ import java.util.List;
 public interface PostService {
 
     public void addPost(Post post , Principal connected) ;
+
     List<Post> getPost();
 
     public void updatePost(Post post, Long id) ;
 
     public void deletePost(Long id) ;
+    List<Post> getPostsSortedByLikes();
 
+    public boolean containsBadWords(Post post);
+    public void calculateStatPercentage(Post post);
+    void incrementLike(Post post);
 
 }

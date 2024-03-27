@@ -23,19 +23,28 @@ public class PostController {
     {
         return postService.getPost() ;
     }
+    @GetMapping("/like")
+    public List<Post> getPostsSortedByLikes() {
+        return postService.getPostsSortedByLikes();
+    }
+    @GetMapping("/test")
+    public String test()
+    {
+        return "test from post" ;
+    }
 
 
-    @GetMapping("/user")
-    public ResponseEntity<?> getCurrent(Principal connectedUser) {
-        final User responseBody ;
+    @GetMapping("/getUser")
+    public ResponseEntity<?> getUser(Principal connectedUser) {
+         User responseBody ;
         try {
             responseBody = userService.getCurrentUser(connectedUser);
         }catch(Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
 
         }
         return ResponseEntity.ok().body(responseBody) ;
+
     }
     @PostMapping("/add")
     public ResponseEntity<?> addPost(Principal connected, @RequestBody Post post) {
@@ -47,5 +56,17 @@ public class PostController {
         }
         return ResponseEntity.ok().body("post added !") ;
     }
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<?> incrementLike(@PathVariable Long postId, @RequestBody Post post) {
+        try {
+            post.setId_Post(postId); // Assurez-vous que l'ID du post est correctement défini
+            postService.incrementLike(post);
+            return ResponseEntity.ok().body("Like incremented successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+
 
 }

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    @Query(value = "select * from Forum order by nbr_like desc",nativeQuery = true)
-    public List<Post> getAllBynbr_like() ;
+    @Query(value = "select * from Post order by nbr_like_post desc",nativeQuery = true)
+    public List<Post> getPostsSortedByLikes() ;
 }
 

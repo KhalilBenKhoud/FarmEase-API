@@ -1,5 +1,6 @@
 package com.pi.farmease.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,13 +16,16 @@ import java.time.LocalDate;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_commentaire ;
-    private String description_commentaire;
-    private LocalDate date_commentaire;
-    private long nbr_siginal_commentaire;
-    private long nbr_like_commentaire;
+    private long id_comment ;
+    private String description_comment;
+    private LocalDate date_comment;
+    private long nbr_siginal_comment;
+    private long nbr_like_comment;
 
     @ToString.Exclude
     @ManyToOne
-    Post forum;
+    Post post;
+    @ManyToOne
+    @JsonBackReference
+    private User user ;
 }

@@ -16,16 +16,21 @@ import java.util.Set;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_forum ;
-    private String title_forum ;
-    private String description_forum ;
-    private Date date_forum  ;
-    private long nbr_like ;
-    private long nbr_signal ;
-    private String category_forum ;
+    private Long id_Post ;
+    private String title_Post ;
+    private String description_Post ;
+    private Date date_Post  ;
+    private long nbr_like_post ;
+    private long nbr_signal_post ;
+    private String category_post ;
+    private String sondage1 ;
+    private String sondage2 ;
+    private double stat1 ;
+    private double stat2 ;
+
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "forum")
+    @OneToMany(mappedBy = "post")
     private Set<Comment> Commentaire;
 
     @ManyToOne
