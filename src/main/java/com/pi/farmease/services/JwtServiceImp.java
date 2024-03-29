@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JwetServiceImp implements JwtService{
+public class JwtServiceImp implements JwtService{
     @Value("${SIGN_IN_KEY}")
     private String SECRET_KEY ;
     private long accessExpiration = 1000*60*15 ; // in millis : 15 minute
