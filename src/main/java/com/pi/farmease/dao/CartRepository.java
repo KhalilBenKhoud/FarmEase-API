@@ -1,11 +1,11 @@
 package com.pi.farmease.dao;
 
-
-import com.pi.farmease.entities.Wallet;
+import com.pi.farmease.entities.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WalletRepository extends JpaRepository<Wallet,Long> {
+public interface CartRepository extends JpaRepository<Cart,Long> {
+    Cart findByUserUserId(Long userId);
 
 }

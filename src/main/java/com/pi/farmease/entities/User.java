@@ -1,6 +1,7 @@
 package com.pi.farmease.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pi.farmease.entities.enumerations.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -24,7 +26,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id ;
+    private Integer userId ;
 
     private String firstname ;
     private String lastname ;
@@ -73,5 +75,12 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled ;
     }
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Product> likedProduct;
+    @JsonIgnore
+    @OneToOne
+    private Cart cart;
+
 
 }
