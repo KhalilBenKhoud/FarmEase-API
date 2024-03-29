@@ -148,7 +148,7 @@ public class CartServiceImpl implements CartService {
 //    }
     @Override
     public List<Map<String, Object>> retrieveCart(Long userId) {
-        Cart cart = cartRepository.findByUserUserId(userId);
+        Cart cart = cartRepository.findByUserId(userId);
         Set<CartItems> cartItems = cart.getCartItems();
 
         List<Map<String, Object>> productList = new ArrayList<>();
@@ -188,7 +188,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<CartItems> selectAll(Long userId) {
-        return cartItemsRepository.findAllByCartUserUserId(userId);
+        return cartItemsRepository.findAllByCartUserId(userId);
     }
 
     @Override

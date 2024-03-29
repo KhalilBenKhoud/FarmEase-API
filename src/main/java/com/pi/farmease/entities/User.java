@@ -31,7 +31,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId ;
+    private Integer id ;
 
     @NonNull
     private String firstname ;
