@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +44,11 @@ public class AdminUserServiceImp implements AdminUserService{
                 .orElse(null) ;
 
     }
+    public List<User> usersSortedByRegistrationDate()  {
+        return userRepository.findAll().stream().filter(user -> user.getRole() != Role.ADMIN)
+                .sorted(Comparator.comparing(User::getRegistrationDate).reversed())
+                .collect(Collectors.toList()) ;
 
+    }
 
 }

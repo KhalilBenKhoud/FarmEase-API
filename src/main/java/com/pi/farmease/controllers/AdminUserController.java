@@ -3,6 +3,7 @@ package com.pi.farmease.controllers;
 import com.pi.farmease.dto.responses.MessageResponse;
 import com.pi.farmease.entities.User;
 import com.pi.farmease.services.AdminUserService;
+import com.pi.farmease.services.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/admin/user")
 public class AdminUserController {
     private final AdminUserService adminUserService ;
+    private final WalletService walletService ;
 
     @PostMapping("/ban/{id}")
     public ResponseEntity<?> banUser(@PathVariable Integer id) {
@@ -41,5 +43,16 @@ public class AdminUserController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
         }
         return ResponseEntity.ok().body(user);
+    }
+
+    @GetMapping("/wealthDistributionIndex")
+    public ResponseEntity<?> getWealthIndex() {
+        double index ;
+        try {
+           index = walletService.CalculateWealthDistributionIndex() ;
+        } catch(Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
+        }
+        return ResponseEntity.ok().body(index);
     }
 }
