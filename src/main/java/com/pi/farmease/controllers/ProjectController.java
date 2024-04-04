@@ -1,17 +1,22 @@
 package com.pi.farmease.controllers;
 
+import com.pi.farmease.entities.enumerations.ProjectCategory;
+import com.pi.farmease.entities.enumerations.ProjectStatus;
+import com.pi.farmease.services.PdfService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.pi.farmease.entities.Project;
 import com.pi.farmease.services.PerformanceService;
 import com.pi.farmease.services.ProjectService;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,6 +27,8 @@ public class ProjectController {
 
     private ProjectService projectService;
     private PerformanceService performanceService;
+    private final PdfService pdfService;
+
 
     // Get all projects (paginated)
     @GetMapping
@@ -46,9 +53,40 @@ public class ProjectController {
     }
 
     // Create a new project
-    @PostMapping
-    public ResponseEntity<Project> createProject(@Valid @RequestBody Project project, Principal connected) {
-        Project savedProject = projectService.createProject(project, connected);
+    @PostMapping("/createProject")
+    public ResponseEntity<Project> createProject(
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam Double netIncomeLastYear,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageUrl,
+            @RequestParam String address,
+            @RequestParam Double goalAmount,
+            @RequestParam Date deadline,
+            @RequestParam Double equityOffered,
+            @RequestParam Double dividendPayoutRatio,
+            @RequestParam Double totalInvestment,
+            @RequestParam ProjectCategory projectCategory,
+            Principal connected) throws IOException {
+
+        Project project = Project.builder()
+                .title(title)
+                .description(description)
+                .netIncomeLastYear(netIncomeLastYear)
+                .address(address)
+                .goalAmount(goalAmount)
+                .deadline(deadline)
+                .equityOffered(equityOffered)
+                .dividendPayoutRatio(dividendPayoutRatio)
+                .totalInvestment(totalInvestment)
+                .projectCategory(projectCategory)
+                .projectStatus(ProjectStatus.PENDING) // Set default status
+                .createdAt(new Date())
+                .build();
+
+            Project savedProject = projectService.createProject(project,imageUrl,connected);
+
+
+
         return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
     }
 
@@ -72,16 +110,6 @@ public class ProjectController {
     }
 
     // Get basic performance for a project
-    @GetMapping("/{id}/performance")
-    public ResponseEntity<Map<String, Double>> getBasicPerformance(@PathVariable Long id) {
-        Project project = projectService.getProjectById(id).orElse(null);
-        if (project != null) {
-            Map<String, Double> performanceMetrics = performanceService.calculateBasicPerformance(project);
-            return new ResponseEntity<>(performanceMetrics, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
     // Check if a project exists by ID
     @GetMapping("/exists/{id}")
@@ -89,4 +117,28 @@ public class ProjectController {
         boolean exists = projectService.existsById(id);
         return new ResponseEntity<>(exists, HttpStatus.OK);
     }
+
+    @GetMapping("/{projectId}/pdf")
+    public ResponseEntity<byte[]> generatePdfForProject(@PathVariable Long projectId) {
+        Optional<Project> optionalProject = projectService.getProjectById(projectId);
+        if (optionalProject.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Project project = optionalProject.get();
+        try {
+            byte[] pdfBytes = pdfService.generatePdf(project);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "project_report.pdf");
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
 }

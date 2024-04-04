@@ -15,8 +15,10 @@ public interface PerformanceService {
 
     void deletePerformanceByProject(Long projectId);
     //**********************
-    Map<String, Double> calculateBasicPerformance(Project project);
     Optional<Performance> getLatestPerformance(Project project);
+
+    void updatePerformanceForYear(Project project, int year, double additionalMetrics);
+
 
     //todo:Calculate specific performance metrics (optional)
 }

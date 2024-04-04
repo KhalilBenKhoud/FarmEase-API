@@ -1,20 +1,22 @@
 package com.pi.farmease.services;
 
+import com.pi.farmease.dao.PerformanceRepository;
+import com.pi.farmease.dao.ProjectRepository;
 import com.pi.farmease.dao.WalletRepository;
-import com.pi.farmease.entities.Wallet;
+import com.pi.farmease.entities.*;
+import com.pi.farmease.entities.enumerations.ProjectStatus;
 import com.pi.farmease.exceptions.BusinessException;
 import com.pi.farmease.exceptions.InsufficientBalanceException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import com.pi.farmease.entities.Investment;
-import com.pi.farmease.entities.Project;
-import com.pi.farmease.entities.User;
 import com.pi.farmease.dao.InvestmentRepository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.security.Principal;
 import java.util.Date;
@@ -29,9 +31,13 @@ public class InvestmentServiceImpl implements InvestmentService {
     private WalletRepository walletRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private PerformanceRepository performanceRepository;
 
     @Override
-    public Investment createInvestment(Investment requestBody, Principal connected) {
+    public Investment createInvestment(Investment requestBody, Long projectId, Principal connected) {
         User connectedUser = userService.getCurrentUser(connected);
         Wallet wallet = connectedUser.getWallet();
 
@@ -43,13 +49,45 @@ public class InvestmentServiceImpl implements InvestmentService {
         walletRepository.save(wallet);
 
         try {
+            Project project = projectRepository.findById(projectId).orElse(null);
+            if (project == null) {
+                throw new BusinessException("Project not found with id: " + projectId);
+            }
+
+            // Calculate total investment dynamically without updating project's total investment
+            double totalInvestment = project.getTotalInvestment() == null ? requestBody.getAmount() :
+                    project.getTotalInvestment() + requestBody.getAmount();
+
+            // Update project's status if the goal amount is reached
+            if (totalInvestment >= project.getGoalAmount()) {
+                project.setProjectStatus(ProjectStatus.FUNDED);
+            }
+
+            // Calculate investor's ownership stake
+            double ownershipStake = (requestBody.getAmount() / totalInvestment) * project.getEquityOffered();
+
+            // Calculate potential payout
+            double potentialPayout = 0.0;
+            Performance performance = performanceRepository.findByProject(project).orElse(null);
+            if (performance != null && performance.getAnnualProjectedProfit() > 0) {
+                double dividendPayoutRatio = project.getDividendPayoutRatio();
+                potentialPayout = requestBody.getAmount() * performance.getAnnualProjectedProfit() * dividendPayoutRatio / 100;
+            }
+
+            // Create investment object
             Investment investment = Investment.builder()
                     .investor(connectedUser)
                     .investedAt(new Date())
                     .amount(requestBody.getAmount())
+                    .investorShare(ownershipStake)
+                    .potentialPayout(potentialPayout)
+                    .project(project)
                     .build();
 
+            // Save updated project status
+            projectRepository.save(project);
 
+            // Send investment notification email
             String investorEmail = connectedUser.getEmail();
             String subject = "Your Investment is Successful!";
             String body = "Dear " + connectedUser.getFirstname() + ",\n\n" +
@@ -58,13 +96,17 @@ public class InvestmentServiceImpl implements InvestmentService {
                     "Thank you for investing in our platform.\n\n" +
                     "Sincerely,\n" +
                     "FARMEASE Team";
-            sendInvestmentNotification( investorEmail, subject, body);
+            sendInvestmentNotification(investorEmail, subject, body);
 
+            // Save investment
             return investmentRepository.save(investment);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException("Failed to create investment due to data integrity issues.", e);
         }
     }
+
+
+
 
 
 
@@ -138,5 +180,12 @@ public class InvestmentServiceImpl implements InvestmentService {
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    public Double calculateOwnershipStake(Investment investment) {
+        Project project = investment.getProject();
+        if (project.getTotalInvestment() == null || project.getTotalInvestment() == 0.0) {
+            return 0.0; // Handle division by zero
+        }
+        return (investment.getAmount() / project.getTotalInvestment()) * project.getEquityOffered();
     }
 }

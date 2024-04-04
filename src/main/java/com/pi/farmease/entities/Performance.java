@@ -22,12 +22,11 @@ public class Performance implements Serializable {
 
     private Double netIncome;
 
-    private Double currentMarketValue;
+
+    private double annualProjectedProfit;
 
     private Integer year;
 
-    // Additional fields for performance calculations
-    private Double totalInvestment;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "project_id")

@@ -9,11 +9,17 @@ import org.springframework.stereotype.Service;
 import com.pi.farmease.entities.Project;
 import com.pi.farmease.entities.User;
 import com.pi.farmease.dao.ProjectRepository;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -25,31 +31,48 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     @Override
-    public Project createProject(Project requestBody, Principal connected) {
-        User connectedUser = userService.getCurrentUser(connected) ;
-        Project project = Project.builder().creator(connectedUser).createdAt(new Date())
+    public Project createProject(Project requestBody, MultipartFile imageUrl, Principal connected) throws IOException {
+        User connectedUser = userService.getCurrentUser(connected);
+
+        // Upload project image
+        String uniqueImageFileName = UUID.randomUUID().toString() + "_" + imageUrl.getOriginalFilename();
+        String imageUploadDirectory = "src\\main\\resources\\image";
+        Path imageUploadPath = Path.of(imageUploadDirectory);
+        if (!Files.exists(imageUploadPath)) {
+            Files.createDirectories(imageUploadPath);
+        }
+        Path imageFilePath = imageUploadPath.resolve(uniqueImageFileName);
+        Files.copy(imageUrl.getInputStream(), imageFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+//        // Upload CSV file
+//        String uniqueCsvFileName = UUID.randomUUID().toString() + "_" + csvFile.getOriginalFilename();
+//        String csvUploadDirectory = "src\\main\\resources\\csv";
+//        Path csvUploadPath = Path.of(csvUploadDirectory);
+//        if (!Files.exists(csvUploadPath)) {
+//            Files.createDirectories(csvUploadPath);
+//        }
+//        Path csvFilePath = csvUploadPath.resolve(uniqueCsvFileName);
+//        Files.copy(csvFile.getInputStream(), csvFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Create project entity
+        Project project = Project.builder()
+                .creator(connectedUser)
+                .createdAt(new Date())
                 .title(requestBody.getTitle())
                 .description(requestBody.getDescription())
                 .deadline(requestBody.getDeadline())
-                .marketValue(requestBody.getMarketValue())
                 .netIncomeLastYear(requestBody.getNetIncomeLastYear())
                 .equityOffered(requestBody.getEquityOffered())
                 .goalAmount(requestBody.getGoalAmount())
                 .projectCategory(requestBody.getProjectCategory())
-                .imageUrl(requestBody.getImageUrl())
+                .imageUrl(uniqueImageFileName)
                 .build();
-        Performance performance = Performance.builder()
-                .project(project)
-                .currentMarketValue(project.getMarketValue())
-                .netIncome(project.getNetIncomeLastYear()).build();
+
+        // Save project entity
+        projectRepository.save(project);
 
 
-
-
-        projectRepository.save(project) ;
-        performanceRepository.save(performance);
-
-        return projectRepository.save(project);
+        return project;
     }
 
     @Override

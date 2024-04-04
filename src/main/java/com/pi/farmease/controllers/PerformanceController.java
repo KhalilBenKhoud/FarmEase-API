@@ -18,12 +18,6 @@ public class PerformanceController {
 
     private PerformanceService performanceService;
 
-    @PostMapping("/{projectId}")
-    public ResponseEntity<Performance> createPerformance(@PathVariable Long projectId, @Valid @RequestBody Performance performance) {
-        performance.setProject(new Project()); // Assuming performance data belongs to a project
-        Performance savedPerformance = performanceService.createPerformance(performance);
-        return new ResponseEntity<>(savedPerformance, HttpStatus.CREATED);
-    }
 
     @GetMapping("/{projectId}")
     public ResponseEntity<Performance> getPerformanceByProject(@PathVariable Long projectId) {

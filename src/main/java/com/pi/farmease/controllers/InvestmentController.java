@@ -1,5 +1,6 @@
 package com.pi.farmease.controllers;
 
+import com.pi.farmease.entities.Project;
 import com.pi.farmease.exceptions.BusinessException;
 import com.pi.farmease.exceptions.InsufficientBalanceException;
 import lombok.AllArgsConstructor;
@@ -21,10 +22,10 @@ public class InvestmentController {
 
     private InvestmentService investmentService;
 
-    @PostMapping
-    public ResponseEntity<Investment> createInvestment(@RequestBody Investment requestBody, Principal connected) {
+    @PostMapping("/{projectId}")
+    public ResponseEntity<Investment> createInvestment(@RequestBody Investment requestBody,@PathVariable Long projectId,  Principal connected) {
         try {
-            Investment savedInvestment = investmentService.createInvestment(requestBody, connected);
+            Investment savedInvestment = investmentService.createInvestment(requestBody,projectId , connected);
             return new ResponseEntity<>(savedInvestment, HttpStatus.CREATED);
         } catch (InsufficientBalanceException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

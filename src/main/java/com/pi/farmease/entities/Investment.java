@@ -23,11 +23,15 @@ public class Investment implements Serializable {
 
     private Double amount;
 
+    private double investorShare;
+
     private Date investedAt;
+
+    private double potentialPayout;
 
     @ManyToOne
     @JoinColumn(name = "investor_id")
-    @JsonBackReference
+    @JsonIgnore
     private User investor;
 
     @ManyToOne

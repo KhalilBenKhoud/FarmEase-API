@@ -1,7 +1,8 @@
 package com.pi.farmease.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pi.farmease.entities.enumerations.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import com.pi.farmease.entities.enumerations.ProjectCategory;
@@ -29,9 +30,11 @@ public class Project implements Serializable {
 
     private Double netIncomeLastYear;
 
-    private Double marketValue;
+    private String csvFilePath;
 
     private String imageUrl;
+
+    private String address;
 
     private Double goalAmount;
 
@@ -42,16 +45,20 @@ public class Project implements Serializable {
     private Double dividendPayoutRatio;
 
 
+    private Double totalInvestment; // Total amount raised so far
+
     @Enumerated(EnumType.STRING)
     private ProjectCategory projectCategory;
+
+    @Enumerated(EnumType.STRING)
+    private ProjectStatus projectStatus;
 
     private Date createdAt;
 
     private Date updatedAt;
-
+    
     @ManyToOne
     @JoinColumn(name = "creator_id")
-    @JsonBackReference
     @JsonIgnore
     private User creator;
 
