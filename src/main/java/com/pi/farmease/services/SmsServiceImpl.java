@@ -4,15 +4,20 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class SmsServiceImpl implements ISms {
+@Value("${ACCOUNT_SID}")
+    public  String ACCOUNT_SID ;
 
-    public static final String ACCOUNT_SID = "AC24f291ee40f61998746d19f99db8c2d2";
-    public static final String AUTH_TOKEN = "98f06b98af890a66f1cb84ecda437cf8";
-    public static final String OUTGOING_SMS_NUMBER = "+12055946787";
+@Value("${AUTH_TOKEN}")
+    public  String AUTH_TOKEN ;
+
+@Value("${OUTGOING_SMS_NUMBER}")
+    public  String OUTGOING_SMS_NUMBER ;
 
 
 

@@ -56,10 +56,10 @@ public class CreditService implements ICreditService {
                 .status(Credit.getStatus())
 
                 .build();
-        /*
+
         String smsNumber = "+21656171888";
         String smsMessage = "Loan sent successfully. Awaiting confirmation of your credit by the administration.  ";
-        String status = s.sendSms(smsNumber, smsMessage); */
+        String status = s.sendSms(smsNumber, smsMessage);
 
         return Creditrepository.save(cr);
 
