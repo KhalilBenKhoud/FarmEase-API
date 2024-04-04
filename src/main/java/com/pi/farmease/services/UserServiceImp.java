@@ -24,7 +24,7 @@ public class UserServiceImp implements UserService{
 
     private final UserRepository userRepository ;
     private final AuthenticationService authenticationService ;
-    private final ServletContext context ;
+
 
     @Override
     public User getCurrentUser(Principal connectedUser) {
@@ -98,5 +98,7 @@ public class UserServiceImp implements UserService{
         }
         addProfileImage(imageFile,connectedUser) ;
     }
+
+
 
 }

@@ -55,6 +55,7 @@ public class User implements UserDetails {
     @JsonManagedReference
     private Wallet wallet ;
 
+
     @OneToMany(mappedBy = "creator")
     @JsonManagedReference
     private List<Project> createdProjects;
