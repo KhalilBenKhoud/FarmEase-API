@@ -138,6 +138,7 @@ public class AuthenticationController {
     }
 
 
+
     @PostMapping("/forget-password")
     public ResponseEntity<?> forgetPassword(@RequestBody String email) {
         try {
@@ -174,6 +175,7 @@ public class AuthenticationController {
         return ResponseEntity.ok()
                 .body(new MessageResponse("password updated successfully"));
     }
+
 
 
 
