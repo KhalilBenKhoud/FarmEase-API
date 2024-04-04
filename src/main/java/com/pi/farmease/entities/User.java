@@ -5,13 +5,11 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pi.farmease.entities.enumerations.Role;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -35,7 +33,7 @@ public class User implements UserDetails {
     private String lastname ;
     @NonNull
     private String password ;
-
+    private Boolean Credit_authorization;
     @NonNull
     @Column(unique = true)
     private String email ;
@@ -54,6 +52,12 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     @JsonManagedReference
     private Wallet wallet ;
+
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Credit> credit;
+
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Garantor> garantor;
 
 
     @Override
@@ -86,4 +90,12 @@ public class User implements UserDetails {
         return enabled ;
     }
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Message {
+        private String role;
+
+        private String content;
+    }
 }
