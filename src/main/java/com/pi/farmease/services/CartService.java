@@ -3,6 +3,7 @@ package com.pi.farmease.services;
 
 import com.pi.farmease.entities.Cart;
 import com.pi.farmease.entities.CartItems;
+import com.pi.farmease.entities.User;
 
 import java.util.List;
 import java.util.Map;
@@ -26,4 +27,7 @@ public interface CartService {
     public List<Cart> selectAllCart() ;
     public List<Double> calculateMonthlyPrices(Long cartId, Integer numberOfMonths, Double downPayment) ;
     public void applyCouponToCart(Long cartId, String couponCode) ;
+
+    public void confirmPurchase(User user) ;
+    public void clearCart(Cart cart) ;
 }

@@ -64,10 +64,8 @@ public class ProductController {
         return iProductService.edit(p);
     }
 //////////////////////
-    @PostMapping("/checkOutOfStockProductsssssssssssssssss")
-    public void checkOutOfStockProducts1() {
-        iProductService.checkOutOfStockProducts1();
-    }
+
+
 
     @DeleteMapping("deleteProductById/{id}")
     public List<Product> deletebyid(@PathVariable Long id) {
@@ -109,7 +107,7 @@ public class ProductController {
     @GetMapping("/checkOutOfStock")
     public List<Product> checkOutOfStockProducts() {
 
-            return iProductService.getProducctOutOfStock();
+            return iProductService.getProductOutOfStock();
 
     }
     @GetMapping("/priceRange")

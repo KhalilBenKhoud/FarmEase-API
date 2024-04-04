@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -78,8 +79,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void addProduct(MultipartFile imageFile ,Product product) throws IOException {
+    public void addProduct(MultipartFile imageFile , Product product) throws IOException {
         String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+
         String uploadDirectory = "src\\main\\resources\\image" ;
         Path uploadPath = Path.of(uploadDirectory);
         if (!Files.exists(uploadPath)) {
@@ -132,26 +134,12 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public List<Product> getProducctOutOfStock() {
+    public List<Product> getProductOutOfStock() {
         return productRepository.findByProductStockEquals(0);
     }
 
 
-    EmailNotificationService emailNotificationService; // Injectez le service de notification par courriel
 
-    public void checkOutOfStockProducts1() {
-        List<Product> outOfStockProducts = productRepository.findByProductStockEquals(0);
-        for (Product product : outOfStockProducts) {
-            try {
-                List<User> adminUsers = userService.findAdminUsers();
-                for (User adminUser : adminUsers) {
-                    emailNotificationService.sendStockNotification(adminUser.getEmail(), product.getProductName());
-                }
-            } catch (MessagingException e) {
-                e.printStackTrace(); // Gérer l'erreur d'envoi de courriel
-            }
-        }
-    }
     @Override
     public List<Product> findProductsInPriceRange(float minPrice, float maxPrice) {
         return productRepository.findByProductPriceBetween(minPrice, maxPrice);

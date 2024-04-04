@@ -4,8 +4,12 @@ import com.pi.farmease.dao.CartRepository;
 import com.pi.farmease.dao.ProductRepository;
 import com.pi.farmease.entities.Cart;
 import com.pi.farmease.entities.CartItems;
+import com.pi.farmease.entities.Transaction;
+import com.pi.farmease.entities.User;
 import com.pi.farmease.services.CartService;
 import com.pi.farmease.services.ProductService;
+import com.pi.farmease.services.TransactionService;
+import com.pi.farmease.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,8 @@ public class CartController {
     ProductService productService ;
     CartRepository cartRepository ;
     ProductRepository productRepository;
+    TransactionService transactionService ;
+    UserService userService ;
 
 
 
@@ -92,4 +98,47 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to apply coupon to the cart.");
         }
     }
+
+
+
+    //////////////////////TRANSACTION
+
+    @GetMapping("/transactions/sale")
+    public List<Transaction> getAllSaleTransactions() {
+        return transactionService.getAllSaleTransactions();
+    }
+
+
+    @PostMapping("/confirm/{userId}")
+    public ResponseEntity<String> confirmPurchase(@PathVariable Long userId) {
+        User user = userService.getById(userId);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("User with ID " + userId + " not found.");
+        }
+        try {
+            cartService.confirmPurchase(user);
+            return ResponseEntity.ok("Purchase confirmed successfully.");
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Failed to confirm purchase: " + e.getMessage());
+        }
+    }
+    /////////////////////////
+    @PostMapping("/{userId}/clear")
+    public ResponseEntity<String> clearCart(@PathVariable Long userId) {
+        User user = userService.getById(userId);
+        if (user == null) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        Cart cart = user.getCart();
+        if (cart == null) {
+            return new ResponseEntity<>("Cart not found for the user", HttpStatus.NOT_FOUND);
+        }
+
+        cartService.clearCart(cart);
+
+        return new ResponseEntity<>("Cart cleared successfully", HttpStatus.OK);
+    }
+
 }

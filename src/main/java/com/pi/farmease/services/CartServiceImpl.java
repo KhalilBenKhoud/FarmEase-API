@@ -1,17 +1,13 @@
 package com.pi.farmease.services;
 
 
-import com.pi.farmease.dao.CartItemsRepository;
-import com.pi.farmease.dao.CartRepository;
-import com.pi.farmease.dao.ProductRepository;
-import com.pi.farmease.dao.UserRepository;
-import com.pi.farmease.entities.Cart;
-import com.pi.farmease.entities.CartItems;
-import com.pi.farmease.entities.Product;
-import com.pi.farmease.entities.User;
+import com.pi.farmease.dao.*;
+import com.pi.farmease.entities.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -24,6 +20,9 @@ public class CartServiceImpl implements CartService {
     UserRepository userRepository;
     CartItemsRepository cartItemsRepository;
     CouponService couponService ;
+    TransactionService transactionService ;
+    CouponRepository couponRepository;
+    EmailService emailService ;
 
 
     public void addToCart(Long productId, Integer quantity, Long userId) {
@@ -213,23 +212,108 @@ public class CartServiceImpl implements CartService {
 
         return monthlyPrices;
     }
-
+    //////////////////////////////////////////COUPON
     public void applyCouponToCart(Long cartId, String couponCode) {
         // Récupérer le panier
         Cart cart = cartRepository.findById(cartId).orElse(null);
-        if (!couponService.isCouponValid(couponCode)) {
-            // Coupon non trouvé ou expiré
+        if (cart == null) {
+            throw new IllegalArgumentException("Panier introuvable.");
+        }
+
+        // Vérifier si le coupon est valide
+        Coupon coupon = couponRepository.findByCodeAndExpirationDateAfter(couponCode, LocalDate.now());
+        if (coupon == null) {
             throw new IllegalArgumentException("Coupon non valide ou expiré.");
         }
 
-        // Appliquer la remise du coupon au montant total du panier
-        double totalPriceWithDiscount = couponService.applyCouponDiscount(couponCode, cart.getTotalPrice());
+        // Appliquer la réduction au montant total du panier
+        double discountAmount = cart.getTotalPrice() * (coupon.getDiscountPercentage() / 100);
+        double totalPriceWithDiscount = cart.getTotalPrice() - discountAmount;
 
         // Mettre à jour le montant total du panier et enregistrer le code du coupon appliqué
         cart.setTotalPrice(totalPriceWithDiscount);
         cart.setCouponCode(couponCode);
         cartRepository.save(cart);
     }
+
+
+
+    public void confirmPurchase(User user) {
+        try {
+            Cart cart = user.getCart(); // Récupérer le panier de l'utilisateur
+            double totalAmount = cart.getTotalPrice(); // Calculer le montant total du panier
+            transactionService.sendMoney(user, totalAmount); // Effectuer la transaction
+
+
+            // Générer un code coupon aléatoire
+            String couponCode = generateCouponCode();
+
+            // Enregistrer le code coupon dans la base de données
+            Coupon coupon = saveCoupon(couponCode);
+
+            // Envoyer un e-mail de confirmation d'achat avec le code coupon
+            sendConfirmationEmail(user, cart, coupon);
+            transactionService.saveSaleTransaction(user,totalAmount);
+
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String generateCouponCode() {
+        // Générer un code coupon aléatoire
+        return UUID.randomUUID().toString();
+    }
+
+    private Coupon saveCoupon(String couponCode) {
+        // Créer une nouvelle instance de coupon
+        Coupon coupon = new Coupon();
+        coupon.setCode(couponCode);
+        coupon.setDiscountPercentage(10.0); // Par exemple, définir le pourcentage de réduction à 10%
+        coupon.setExpirationDate(LocalDate.now().plusYears(1)); // Définir la date d'expiration dans un an
+        coupon.setUsed(false); // Initialiser le coupon comme non utilisé
+        // Enregistrer le coupon dans la base de données
+        return couponRepository.save(coupon);
+    }
+
+
+    public void sendConfirmationEmail(User user, Cart cart, Coupon coupon) {
+        String userEmail = user.getEmail();
+        String subject = "Confirmation d'achat et code coupon";
+
+        StringBuilder message = new StringBuilder();
+        message.append("Bonjour ").append(user.getFirstname()).append(",\n\n");
+        message.append("Nous sommes heureux de vous confirmer que votre achat a été effectué avec succès !\n\n");
+
+        // Ajouter les détails du panier et le montant total de la commande
+        message.append("\nDétails de la commande :\n");
+        for (CartItems item : cart.getCartItems()) {
+            message.append("- ").append(item.getProduct().getProductName()).append(": ").append(item.getCartItemsQuantity()).append(" x ").append(item.getProduct().getProductPrice()).append(" TND\n");
+        }
+        message.append("\nMontant total de la commande : ").append(cart.getTotalPrice()).append(" TND\n\n");
+
+        // Ajouter le code coupon
+        message.append("Utilisez le code coupon suivant pour bénéficier d'une réduction lors de votre prochain achat : ").append(coupon.getCode()).append("\n\n");
+
+        // Message de remerciement
+        message.append("Merci pour votre achat !\n\nCordialement,\nFARMEASE");
+
+        // Envoi du mail à l'utilisateur
+        emailService.sendEmail(userEmail, subject, message.toString());
+    }
+
+
+    @Override
+    @Transactional
+    public void clearCart(Cart cart) {
+        cart.setTotalPrice(0.0);
+
+        cartItemsRepository.deleteByCartCartId(cart.getCartId());
+
+    }
+
+
+
 }
 
 
