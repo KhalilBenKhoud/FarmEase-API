@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -29,18 +30,29 @@ public class ApplicationController {
 
     @PostMapping("/add")
     public ResponseEntity<Void> addApplication(@RequestBody Application application, Principal connected) {
-        long postid=1;
-        applicationService.addApplication(application, connected,postid);
+        long mortgageid=5;
+        applicationService.addApplication(application, connected,mortgageid);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/{id}/export")
+    public ResponseEntity<Void> exportApplicationToPdf(@PathVariable long id) throws IOException {
+
+        Application application = applicationService.getApplicationById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found with ID: "+id));
+
+        // Export the application to PDF
+        applicationService.exportApplicationToPdf(application, "C:\\Users\\benza\\Desktop\\school\\application_" + id + ".pdf");
+
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Application> updateApplication(@PathVariable long id, @RequestBody Application application) {
-        Application updatedApplication = applicationService.updateApplication(id, application);
-        return ResponseEntity.ok(updatedApplication);
+    public ResponseEntity<Void> updateApplication(@PathVariable long id, @RequestBody Application application) {
+        applicationService.updateApplication(application, id);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
+        @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteApplication(@PathVariable long id) {
         applicationService.deleteApplication(id);
         return ResponseEntity.noContent().build();

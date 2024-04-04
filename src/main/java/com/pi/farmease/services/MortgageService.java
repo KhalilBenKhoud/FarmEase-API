@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MortgageService
-{ Mortgage addMortgage(Mortgage mortgage);
+{ public void addMortgage(Mortgage mortgage);
 
     List<Mortgage> getAllMortgages();
 
@@ -17,4 +17,5 @@ public interface MortgageService
     Mortgage updateMortgage(Long id, Mortgage mortgageDetails);
 
     void deleteMortgage(Long id);
+    void postOnLinkedIn(String shareCommentary);
 }

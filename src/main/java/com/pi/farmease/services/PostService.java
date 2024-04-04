@@ -4,6 +4,7 @@ import com.pi.farmease.entities.Post;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 public interface PostService {
 
@@ -19,5 +20,7 @@ public interface PostService {
     public boolean containsBadWords(Post post);
     public void calculateStatPercentage(Post post);
     void incrementLike(Post post);
+    void incrementSignal(Post post);
+
 
 }

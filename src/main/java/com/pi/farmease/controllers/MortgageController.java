@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
 @RestController
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MortgageController {
     private final MortgageService mortgageService;
+
 
     @GetMapping("/get")
     public List<Mortgage> getAllMortgages() {
@@ -29,8 +31,8 @@ public class MortgageController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addMortgage(@RequestBody Mortgage mortgage) {
-        Mortgage addedMortgage = mortgageService.addMortgage(mortgage);
-        return ResponseEntity.ok().body("Mortgage added with ID: " + addedMortgage.getId_mortgage());
+         mortgageService.addMortgage(mortgage);
+        return ResponseEntity.ok().body("Mortgage added with ID: " + mortgage.getId_mortgage());
     }
 
     @PutMapping("/update/{id}")

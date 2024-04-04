@@ -17,7 +17,8 @@ public class Application {
     private String prenom_application ;
     private long interesting_rate_application;
     private String description_application;
-    private long etat_application;
+    private String etat_application;
+    private String message_application;
 
 
     @ToString.Exclude

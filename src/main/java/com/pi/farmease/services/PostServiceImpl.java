@@ -3,6 +3,7 @@ package com.pi.farmease.services;
 import com.pi.farmease.dao.PostRepository;
 import com.pi.farmease.entities.Post;
 import com.pi.farmease.entities.User;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -56,8 +58,23 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void updatePost(Post post, Long id) {
-       post.setId_Post(id); ;
-       postRepository.save(post) ;
+        Post existingPost = postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+        // Mettre à jour les attributs avec les nouvelles valeurs
+        existingPost.setTitle_Post(post.getTitle_Post());
+        existingPost.setDescription_Post(post.getDescription_Post());
+        existingPost.setDate_Post(post.getDate_Post());
+        existingPost.setNbr_like_post(post.getNbr_like_post());
+        existingPost.setNbr_signal_post(post.getNbr_signal_post());
+        existingPost.setCategory_post(post.getCategory_post());
+        existingPost.setSondage1(post.getSondage1());
+        existingPost.setSondage2(post.getSondage2());
+        existingPost.setStat1(post.getStat1());
+        existingPost.setStat2(post.getStat2());
+
+        // Enregistrer les modifications dans la base de données
+        postRepository.save(existingPost);
     }
 
     @Override
@@ -66,9 +83,9 @@ public class PostServiceImpl implements PostService {
     }
     @Override
     public List<Post> getPostsSortedByLikes() {
-        // Définir le tri par le nombre de likes
+
         Sort sort = Sort.by(Sort.Direction.DESC, "nbr_like_post");
-        // Récupérer la liste des posts triés par le nombre de likes
+
         return postRepository.findAll(sort);
     }
 
@@ -111,7 +128,14 @@ public class PostServiceImpl implements PostService {
         // Enregistrer les modifications dans la base de données
         postRepository.save(post);
     }
+    @Override
+    public void incrementSignal(Post post) {
+        // Incrémenter le nombre de signaux
+        long currentSignals = post.getNbr_signal_post();
+        post.setNbr_signal_post(currentSignals + 1);
 
-
+        // Enregistrer les modifications dans la base de données
+        postRepository.save(post);
+    }
 
 }
