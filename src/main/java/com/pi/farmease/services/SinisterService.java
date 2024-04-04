@@ -1,6 +1,8 @@
 package com.pi.farmease.services;
 import com.pi.farmease.entities.Sinister;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 public interface SinisterService {
@@ -13,4 +15,6 @@ public interface SinisterService {
     Sinister getSinisterById(Integer id);
 
     List<Sinister> getAllSinisters();
+
+    public String savePhoto(MultipartFile file)throws IOException;
 }

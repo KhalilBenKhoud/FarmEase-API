@@ -14,6 +14,7 @@ import java.util.Optional;
 public class InsuranceServiceImp implements InsuranceService{
 
     private final InsuranceRepository insuranceRepository;
+    private final IEmailService emailService;
 
 
     // Méthode pour récupérer toutes les assurances
@@ -25,14 +26,21 @@ public class InsuranceServiceImp implements InsuranceService{
     // Méthode pour récupérer une assurance par son ID
     @Override
     public Insurance getInsuranceById(Integer id) {
+
         return insuranceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Insurance not found with id: " + id));
     }
 
     // Méthode pour enregistrer une assurance
     @Override
     public Insurance saveInsurance(Insurance insurance) {
+        /////////////////MAILING//////////////////////////
+        emailService.sendSimpleMailMessage(insurance,insurance.getUser().getEmail());
+        //////////////////////////////////////////////////
+
         return insuranceRepository.save(insurance);
     }
+
+
 
     // Méthode pour mettre à jour une assurance
     @Override
@@ -46,3 +54,5 @@ public class InsuranceServiceImp implements InsuranceService{
         insuranceRepository.deleteById(id);
     }
 }
+/////////////////MAILING//////////////////////////
+//emailService.sendSimpleMailMessage(c.getSurname()+ " "+ c.getName(),c.getEmail(),confirmation.getToken());

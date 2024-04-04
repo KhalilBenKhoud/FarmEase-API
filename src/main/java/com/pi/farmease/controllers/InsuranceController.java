@@ -39,6 +39,7 @@ public class InsuranceController {
 
     @PostMapping("/add")
     public ResponseEntity<Insurance> createInsurance(@RequestBody Insurance insurance) {
+        System.out.println(insurance.getCoverage_amount()+": "+insurance.getUser());
         Insurance createdInsurance = insuranceService.saveInsurance(insurance);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInsurance);
     }

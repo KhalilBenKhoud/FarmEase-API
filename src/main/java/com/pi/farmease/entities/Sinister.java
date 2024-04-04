@@ -23,6 +23,7 @@ public class Sinister {
 
     private Date date_Sinister ;
     private  String description ;
+    private String photo;
     private double  amount ;
     @Enumerated(EnumType.STRING)
     private TypeSinister type ;
