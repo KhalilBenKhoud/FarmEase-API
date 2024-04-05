@@ -15,4 +15,5 @@ public interface TransactionService {
     Transaction add(Transaction transaction);
     public void saveSaleTransaction(User user, double amount) ;
     public List<Transaction> getAllSaleTransactions();
+  
 }

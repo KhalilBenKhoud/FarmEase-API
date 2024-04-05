@@ -1,8 +1,14 @@
 package com.pi.farmease.entities;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
+
+
+import com.pi.farmease.entities.enumerations.TransactionType;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Date;
 
@@ -23,12 +29,20 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     private TransactionType type ;
-    private double amount;
-    public enum TransactionType {
-        SALE , INVESTMENT , LOAN , MORTGAGE , INSURANCE
-    }
 
     @ManyToOne
     private User recipient ;
+}
+
+
+
+    private double amount ;
+
+    @ManyToOne
+    private User recipient ;
+
+    @ManyToOne
+    private User sender ;
+
 }
 
