@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f2f2f2;
+            padding: 8px;
+            box-sizing: border-box;
+            overflow: auto;
+        }
+        .container {
+            max-width: 95%;
+            width: 90%;
+            margin: auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            border-radius: 50%;
+            transform: scale(1.5);
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color : darkgreen;
+        }
+        .content {
+            line-height: 1.5;
+
+        }
+
+        .footer {
+            font-weight: 200;
+            text-align: center;
+            color : darkgreen;
+
+        }
+
+        span {
+            color : cadetblue;
+
+        }
+
+        .icon {
+            width: 100px;
+            height: 100px;
+
+        }
+        .header > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap : 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="logo">FarmEase</h1>
+        <div>
+            <h1 class="title">Verify your account</h1>
+            <img th:src="@{https://cdn-icons-png.flaticon.com/512/2808/2808284.png}" class="icon" alt="icon" />
+        </div>
+
+
+    </div>
+    <div class="content">
+        <p>Hi <span th:text="${fullName}"></span></p>
+        <p>We received a request to verify your account on FarmEase.</p>
+        <p>click on this <b>link</b> : </p>
+        <a th:href="${link}">Verify</a>
+
+        <p>This link will expire in 1 day. If you did not request a registration, you can safely ignore this email.</p>
+
+    </div>
+    <div class="footer">
+        <p> &copy;2024 FarmEase, with love.</p>
+    </div>
+</div>
+</body>
+</html>
