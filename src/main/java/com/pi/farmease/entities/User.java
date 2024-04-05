@@ -1,18 +1,22 @@
 package com.pi.farmease.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pi.farmease.entities.enumerations.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -33,7 +37,7 @@ public class User implements UserDetails {
     private String lastname ;
     @NonNull
     private String password ;
-    private Boolean Credit_authorization;
+
     @NonNull
     @Column(unique = true)
     private String email ;
@@ -52,6 +56,14 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     @JsonManagedReference
     private Wallet wallet ;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Post> posts ;
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Comment> comments ;
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Application> applications ;
+
 
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Credit> credit;
@@ -59,6 +71,13 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Garantor> garantor;
 
+    @OneToMany(mappedBy = "creator")
+    @JsonManagedReference
+    private List<Project> createdProjects;
+
+    @OneToMany(mappedBy = "investor")
+    @JsonManagedReference
+    private List<Investment> investments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -89,13 +108,12 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled ;
     }
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Product> likedProduct;
+    @JsonIgnore
+    @OneToOne
+    private Cart cart;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Message {
-        private String role;
 
-        private String content;
-    }
 }
