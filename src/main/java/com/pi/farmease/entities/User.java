@@ -1,20 +1,24 @@
 package com.pi.farmease.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import com.pi.farmease.entities.enumerations.Role;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -92,5 +96,12 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled ;
     }
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Product> likedProduct;
+    @JsonIgnore
+    @OneToOne
+    private Cart cart;
+
 
 }
