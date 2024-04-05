@@ -81,7 +81,7 @@ public class ProductController {
 
 
     @PostMapping("addLike/{userId}")
-    public Product toggleLikePack(@RequestBody Product product, @PathVariable long userId) {
+    public Product toggleLikePack(@RequestBody Product product, @PathVariable Integer userId) {
         User u = userService.getById(userId);
         return iProductService.toggleLike(product, u);
 

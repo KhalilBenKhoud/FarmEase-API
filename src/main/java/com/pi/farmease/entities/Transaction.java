@@ -30,12 +30,6 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type ;
 
-    @ManyToOne
-    private User recipient ;
-}
-
-
-
     private double amount ;
 
     @ManyToOne

@@ -110,7 +110,7 @@ public class CartController {
 
 
     @PostMapping("/confirm/{userId}")
-    public ResponseEntity<String> confirmPurchase(@PathVariable Long userId) {
+    public ResponseEntity<String> confirmPurchase(@PathVariable Integer userId) {
         User user = userService.getById(userId);
         if (user == null) {
             return ResponseEntity.badRequest().body("User with ID " + userId + " not found.");
@@ -125,7 +125,7 @@ public class CartController {
     }
     /////////////////////////
     @PostMapping("/{userId}/clear")
-    public ResponseEntity<String> clearCart(@PathVariable Long userId) {
+    public ResponseEntity<String> clearCart(@PathVariable Integer userId) {
         User user = userService.getById(userId);
         if (user == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);

@@ -25,7 +25,7 @@ public class CartServiceImpl implements CartService {
     EmailService emailService ;
 
 
-    public void addToCart(Long productId, Integer quantity, Long userId) {
+    public void addToCart(Long productId, Integer quantity, Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
@@ -68,7 +68,7 @@ public class CartServiceImpl implements CartService {
         productRepository.save(product);
     }
 
-    public void removeFromCartByProductId(Long productId, Long userId) {
+    public void removeFromCartByProductId(Long productId, Integer userId) {
 
         // **Nouveau :** Obtient l'utilisateur à partir de son identifiant
         User user = userRepository.findById(userId)
@@ -97,6 +97,16 @@ public class CartServiceImpl implements CartService {
 
         // **Nouveau :** Supprime l'élément de panier de la base de données
         cartItemsRepository.deleteById(cartItemToRemove.getCartItemsId());
+    }
+
+    @Override
+    public void addToCart(Long productId, Integer quantity, Long userId) {
+
+    }
+
+    @Override
+    public void removeFromCartByProductId(Long productId, Long userId) {
+
     }
 
     public void updateQuantity(Long cartItemId, Integer newQuantity) {

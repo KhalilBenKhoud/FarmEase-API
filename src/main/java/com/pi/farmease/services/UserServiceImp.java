@@ -109,7 +109,7 @@ public class UserServiceImp implements UserService{
 
 
         @Override
-        public User getById (Long id){
+        public User getById (Integer id){
             return userRepository.findById(id).get();
         }
         public List<User> findAdminUsers () {

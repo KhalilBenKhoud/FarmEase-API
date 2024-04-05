@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import com.pi.farmease.entities.Investment;
 import com.pi.farmease.services.InvestmentService;
 
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +56,7 @@ public class InvestmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Investment> updateInvestment(@PathVariable Long id, @Valid @RequestBody Investment investment) {
+    public ResponseEntity<Investment> updateInvestment(@PathVariable Long id,  @RequestBody Investment investment) {
         if (!id.equals(investment.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -129,9 +129,9 @@ public class CreditController {
     }
 
     @GetMapping("/calculateRisk/{creditId}/{clientId}")
-    public String calculateRiskForCredit(@PathVariable Long creditId, @PathVariable Long clientId) {
+    public String calculateRiskForCredit(@PathVariable Long creditId, @PathVariable Integer clientId) {
         Credit credit = creditservice.getcreditById(creditId);
-        User client = userRep.getById(Math.toIntExact(clientId));
+        User client = userRep.getById(clientId);
         return creditservice.calculateRiskForCredit(credit, client);
     }
 

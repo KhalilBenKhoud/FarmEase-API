@@ -49,7 +49,7 @@ public class User implements UserDetails {
     private String imageName ;
 
     private boolean enabled  ;
-
+    private Boolean Credit_authorization;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date registrationDate = new Date() ;
 

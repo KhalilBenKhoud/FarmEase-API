@@ -13,7 +13,7 @@ import com.pi.farmease.services.PerformanceService;
 import com.pi.farmease.services.ProjectService;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
@@ -92,7 +92,7 @@ public class ProjectController {
 
     // Update a project
     @PutMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody Project project) {
+    public ResponseEntity<Project> updateProject(@PathVariable Long id,  @RequestBody Project project) {
         project.setId(id); // Ensure updating existing project with correct ID
         Project updatedProject = projectService.updateProject(project);
         if (updatedProject != null) {

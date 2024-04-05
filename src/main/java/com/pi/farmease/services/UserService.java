@@ -20,7 +20,7 @@ public interface UserService {
     User add(User user);
     User edit(User user);
 
-    User getById(Long id);
+    User getById(Integer id);
 
     public User getCurrentUser(Principal connectedUser) ;
 

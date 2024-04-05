@@ -8,7 +8,6 @@ import com.pi.farmease.entities.Performance;
 import com.pi.farmease.entities.Project;
 import com.pi.farmease.services.PerformanceService;
 
-import javax.validation.Valid;
 import java.util.Optional;
 
 @RestController
@@ -29,7 +28,7 @@ public class PerformanceController {
     }
 
     @PutMapping("/{projectId}")
-    public ResponseEntity<Performance> updatePerformance(@PathVariable Long projectId, @Valid @RequestBody Performance performance) {
+    public ResponseEntity<Performance> updatePerformance(@PathVariable Long projectId,  @RequestBody Performance performance) {
         if (!projectId.equals(performance.getProject().getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
