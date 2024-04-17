@@ -17,4 +17,7 @@ public interface SinisterService {
     List<Sinister> getAllSinisters();
 
     public String savePhoto(MultipartFile file)throws IOException;
+
+    // Méthode pour vérifier si la description contient des gros mots
+    boolean containsForbiddenWords(String description);
 }

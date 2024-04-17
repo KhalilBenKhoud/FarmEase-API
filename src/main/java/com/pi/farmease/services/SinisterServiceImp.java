@@ -20,15 +20,22 @@ public class SinisterServiceImp implements SinisterService {
 
     private final SinisterRepository sinisterRepository;
     private static final String UPLOAD_DIR = "uploads/Sinisters/";
+    private static final List<String> FORBIDDEN_WORDS = List.of("gros_mot1", "gros_mot2", "gros_mot3");
 
 
     @Override
     public Sinister saveSinister(Sinister sinister) {
+        if (containsForbiddenWords(sinister.getDescription())) {
+            throw new IllegalArgumentException("La description contient des mots interdits.");
+        }
         return sinisterRepository.save(sinister);
     }
 
     @Override
     public Sinister updateSinister(Sinister sinister) {
+        if (containsForbiddenWords(sinister.getDescription())) {
+            throw new IllegalArgumentException("La description contient des mots interdits.");
+        }
         return sinisterRepository.save(sinister);
     }
 
@@ -77,5 +84,15 @@ public class SinisterServiceImp implements SinisterService {
         if (!directory.exists()) {
             directory.mkdirs();
         }
+    }
+
+    // Méthode pour vérifier si la description contient des gros mots
+    public boolean containsForbiddenWords(String description) {
+        for (String word : FORBIDDEN_WORDS) {
+            if (description.contains(word)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
