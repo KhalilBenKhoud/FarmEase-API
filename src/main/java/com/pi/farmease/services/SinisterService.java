@@ -20,4 +20,8 @@ public interface SinisterService {
 
     // Méthode pour vérifier si la description contient des gros mots
     boolean containsForbiddenWords(String description);
+
+
+    List<Sinister> getSinistersByDate_Sinister(int month);
+
 }

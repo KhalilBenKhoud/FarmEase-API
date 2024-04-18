@@ -1,5 +1,6 @@
 package com.pi.farmease.controllers;
 
+import com.pi.farmease.dao.SinisterRepository;
 import com.pi.farmease.entities.Sinister;
 import com.pi.farmease.services.SinisterService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 public class SinisterController {
 
     private final SinisterService sinisterService;
+    private final SinisterRepository sinisterRepository;
 
     @GetMapping
     public ResponseEntity<List<Sinister>> getAllSinisters() {
@@ -81,6 +83,16 @@ public class SinisterController {
                     +s.getPhoto());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload picture");
+        }
+    }
+
+    @GetMapping("/date/{month}")
+    public ResponseEntity<List<Sinister>> getSinistersByDate(@PathVariable("month") int month) {
+        List<Sinister> sinisters = sinisterRepository.getSinistersByDate_Sinister(month);
+        if (!sinisters.isEmpty()) {
+            return ResponseEntity.ok(sinisters);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }

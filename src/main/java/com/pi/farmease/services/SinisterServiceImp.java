@@ -95,4 +95,8 @@ public class SinisterServiceImp implements SinisterService {
         }
         return false;
     }
+
+    public List<Sinister> getSinistersByDate_Sinister(int month) {
+        return sinisterRepository.getSinistersByDate_Sinister(month);
+    }
 }
