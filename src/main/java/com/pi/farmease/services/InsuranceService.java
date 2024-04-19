@@ -11,4 +11,5 @@ public interface InsuranceService {
     Insurance saveInsurance(Insurance insurance);
     Insurance updateInsurance(Insurance insurance);
     void deleteInsurance(Integer id);
+    public void checkInsuranceExpiration();
 }

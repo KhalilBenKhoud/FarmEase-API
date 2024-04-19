@@ -99,4 +99,12 @@ public class SinisterServiceImp implements SinisterService {
     public List<Sinister> getSinistersByDate_Sinister(int month) {
         return sinisterRepository.getSinistersByDate_Sinister(month);
     }
+
+    // Nouvelle méthode pour récupérer les statistiques des sinistres par mois
+    public String getSinisterStatisticsByMonth(int month) {
+        List<Sinister> sinisters = sinisterRepository.getSinistersByDate_Sinister(month);
+        double totalAmount = sinisters.stream().mapToDouble(Sinister::getAmount).sum();
+        return String.format("Le nombre de sinistres du mois %d est %d, et la somme des montants est %.2f",
+                month, sinisters.size(), totalAmount);
+    }
 }

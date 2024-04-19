@@ -14,8 +14,10 @@ public class StatistiqueServiceImp implements StatistiqueService {
     private SinisterRepository sinisterRepository;
 
     @Override
-    public List<Sinister> getSinisterStatisticsByMonth() {
-        int month = 2;
-        return sinisterRepository.getSinistersByDate_Sinister(month);
+    public String getSinisterStatisticsByMonth(int month) {
+        List<Sinister> sinisters = sinisterRepository.getSinistersByDate_Sinister(month);
+        double totalAmount = sinisters.stream().mapToDouble(Sinister::getAmount).sum();
+        return String.format("Le nombre de sinistres du mois %d est %d, et la somme des montants est %.2f",
+                month, sinisters.size(), totalAmount);
     }
 }

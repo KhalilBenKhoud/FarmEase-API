@@ -20,8 +20,10 @@ public interface SinisterService {
 
     // Méthode pour vérifier si la description contient des gros mots
     boolean containsForbiddenWords(String description);
-
-
+    // Méthode pour récupérer les sinistres par mois
     List<Sinister> getSinistersByDate_Sinister(int month);
+
+    // Nouvelle méthode pour récupérer les statistiques des sinistres par mois
+    String getSinisterStatisticsByMonth(int month);
 
 }

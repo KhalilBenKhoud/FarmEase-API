@@ -87,10 +87,13 @@ public class SinisterController {
     }
 
     @GetMapping("/date/{month}")
-    public ResponseEntity<List<Sinister>> getSinistersByDate(@PathVariable("month") int month) {
+    public ResponseEntity<String> getSinistersStatisticsByDate(@PathVariable("month") int month) {
         List<Sinister> sinisters = sinisterRepository.getSinistersByDate_Sinister(month);
+        Double totalAmount = sinisterRepository.getTotalAmountByMonth(month);
         if (!sinisters.isEmpty()) {
-            return ResponseEntity.ok(sinisters);
+            String message = String.format("Le nombre de sinistres du mois %d est %d, et la somme des montants est %.2f",
+                    month, sinisters.size(), totalAmount != null ? totalAmount : 0.0);
+            return ResponseEntity.ok(message);
         } else {
             return ResponseEntity.notFound().build();
         }
