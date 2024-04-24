@@ -5,4 +5,6 @@ import java.security.Principal;
 public interface WalletService {
 
     public void addInterest() ;
+
+    public double CalculateWealthDistributionIndex() ;
 }
