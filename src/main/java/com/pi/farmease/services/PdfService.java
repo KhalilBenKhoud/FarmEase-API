@@ -1,7 +1,8 @@
 package com.pi.farmease.services;
 
-import com.pi.farmease.entities.Project;
-import com.pi.farmease.entities.enumerations.ProjectCategory;
+
+
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -9,11 +10,11 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import com.pi.farmease.entities.Project;
 
 @Service
 public class PdfService {
@@ -33,11 +34,13 @@ public class PdfService {
 
                 contentStream.setFont(PDType1Font.HELVETICA, 12);
                 contentStream.beginText();
-                contentStream.newLineAtOffset(100, 670);
+
                 contentStream.showText("Title: " + project.getTitle());
                 contentStream.newLine();
                 contentStream.showText("Description: " + project.getDescription());
                 contentStream.newLine();
+
+
                 contentStream.showText("Net Income Last Year: " + project.getNetIncomeLastYear());
                 contentStream.newLine();
                 contentStream.showText("Image URL: " + project.getImageUrl());
