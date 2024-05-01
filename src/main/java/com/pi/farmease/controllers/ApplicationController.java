@@ -34,6 +34,7 @@ public class ApplicationController {
         applicationService.addApplication(application, connected,mortgageid);
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("/{id}/export")
     public ResponseEntity<Void> exportApplicationToPdf(@PathVariable long id) throws IOException {
 

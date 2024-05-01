@@ -101,19 +101,19 @@ public class ApplicationServiceImpl implements ApplicationService {
 
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText("Application Details");
-                yPosition -= 20; // Adjust Y position for the next line
+                yPosition += 20; // Adjust Y position for the next line
 
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText("ID: " + application.getId_application());
-                yPosition -= 20; // Adjust Y position for the next line
+                yPosition += 20; // Adjust Y position for the next line
 
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText("Nom: " + application.getNom_application());
-                yPosition -= 20; // Adjust Y position for the next line
+                yPosition += 60; // Adjust Y position for the next line
 
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText("Etat: " + application.getEtat_application());
-                yPosition -= 20; // Adjust Y position for the next line
+                yPosition += 80; // Adjust Y position for the next line
 
                 // Add more attributes as needed
                 contentStream.endText();
@@ -122,6 +122,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             document.save(new File(filePath));
         }
     }
+
     @Override
     public void deleteApplication(long id) {
         applicationRepository.deleteById(id);

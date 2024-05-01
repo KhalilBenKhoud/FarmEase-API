@@ -11,7 +11,7 @@ public interface MortgageService
 { public void addMortgage(Mortgage mortgage);
 
     List<Mortgage> getAllMortgages();
-
+    void updateMortgageRating(Long id, double rate);
     Optional<Mortgage> getMortgageById(Long id);
 
     Mortgage updateMortgage(Long id, Mortgage mortgageDetails);

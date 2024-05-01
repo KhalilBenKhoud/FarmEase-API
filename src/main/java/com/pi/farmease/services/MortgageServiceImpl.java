@@ -66,14 +66,37 @@ public class MortgageServiceImpl implements MortgageService {
                 .type_mortgage(requestBody.getType_mortgage())
                 .price_mortgage(requestBody.getPrice_mortgage())
                 .applications(requestBody.getApplications())
+                .rating_mortgage(0) // Set the rating field to 0
                 .build();
 
         // Save the mortgage in the database
         mortgageRepository.save(mortgage);
 
 
-        postOnLinkedIn("test");
+       // postOnLinkedIn("test");
     }
+    @Override
+    public void updateMortgageRating(Long id, double rate) {
+        // Rechercher le mortgage par son ID
+        Optional<Mortgage> mortgageOptional = mortgageRepository.findById(id);
+        if (mortgageOptional.isPresent()) {
+            Mortgage mortgage = mortgageOptional.get();
+
+            // Vérifier si rating_mortgage est égal à 0
+            if (mortgage.getRating_mortgage() == 0) {
+                // Si rating_mortgage est égal à 0, attribuer rate directement
+                mortgage.setRating_mortgage(rate);
+            } else {
+                // Si rating_mortgage est supérieur à 0, calculer la moyenne entre l'ancien rating et le nouveau
+                double oldRating = mortgage.getRating_mortgage();
+                double newRating = (oldRating + rate) / 2;
+                mortgage.setRating_mortgage(newRating);
+            }
+
+            // Enregistrer la mise à jour dans la base de données
+            mortgageRepository.save(mortgage);
+        }
+        }
     @Override
     public void postOnLinkedIn(String shareCommentary) {shareCommentary="test";
         HttpHeaders headers = new HttpHeaders();

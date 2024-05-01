@@ -28,7 +28,11 @@ public class MortgageController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
+    @PutMapping("/update-rating/{id}/{rate}")
+    public ResponseEntity<?> updateMortgageRating(@PathVariable Long id, @PathVariable double rate) {
+        mortgageService.updateMortgageRating(id, rate);
+        return ResponseEntity.ok().body("Mortgage rating updated with ID: " + id);
+    }
     @PostMapping("/add")
     public ResponseEntity<?> addMortgage(@RequestBody Mortgage mortgage) {
          mortgageService.addMortgage(mortgage);

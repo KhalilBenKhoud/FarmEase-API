@@ -24,6 +24,7 @@ public class Mortgage {
     private String type_mortgage ;
     private long price_mortgage;
     private String land_description;
+    private double rating_mortgage;
     @JsonIgnore
     @ToString.Exclude
 
