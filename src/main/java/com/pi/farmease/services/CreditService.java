@@ -4,6 +4,9 @@ import com.pi.farmease.dao.UserRepository;
 import com.pi.farmease.dao.creditRepository;
 import com.pi.farmease.entities.Credit;
 import com.pi.farmease.entities.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -56,10 +59,10 @@ public class CreditService implements ICreditService {
                 .status(Credit.getStatus())
 
                 .build();
-
-        String smsNumber = "+21656171888";
-        String smsMessage = "Loan sent successfully. Awaiting confirmation of your credit by the administration.  ";
-        String status = s.sendSms(smsNumber, smsMessage);
+//
+     //   String smsNumber = "+21656171888";
+       // String smsMessage = "Loan sent successfully. Awaiting confirmation of your credit by the administration.  ";
+        // String status = s.sendSms(smsNumber, smsMessage);
 
         return Creditrepository.save(cr);
 
@@ -301,6 +304,16 @@ public class CreditService implements ICreditService {
         }
     }
 
+
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public double calculateTotalAmount() {
+        Query query = entityManager.createQuery("SELECT SUM(c.amount) FROM Credit c");
+        Double totalAmount = (Double) query.getSingleResult();
+        return totalAmount != null ? totalAmount : 0.0;
+    }
 
 
 

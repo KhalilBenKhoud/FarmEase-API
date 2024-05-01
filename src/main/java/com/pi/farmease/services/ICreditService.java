@@ -22,13 +22,14 @@ public interface ICreditService {
 
     List<Credit> getCreditByDueDate();
 
-
+    public Amortisement Simulateur(Credit credit , int idcredit) ;
     float calculeMonthlyPayment(int credit);
     List<Amortisement> amortisement(int idCredit);
-    Amortisement Simulateur(Credit credit , int idCredit);
+
 
     public String calculateRiskForCredit(Credit credit, User client) ;
     public void exportToExcel(List<String> data, String filePath , int idCredit) throws IOException ;
+    public double calculateTotalAmount() ;
 
 
 }

@@ -1,14 +1,13 @@
 package com.pi.farmease.services;
 
-import com.pi.farmease.entities.Credit;
-import com.pi.farmease.entities.User;
-import com.pi.farmease.entities.Loan_Type ;
-import com.pi.farmease.dao.LoanTypeRepository ;
-
+import com.pi.farmease.dao.LoanTypeRepository;
+import com.pi.farmease.entities.Loan_Type;
 import lombok.AllArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,9 +35,17 @@ public class LoanTypeService implements ILoanTypeService {
     }
 
 
-    public Loan_Type addLoanType(Loan_Type loanType) {
+    public Loan_Type addLoanType(Loan_Type loanType, MultipartFile image) throws IOException {
+        // Vérifiez si une image est fournie
+        if (image != null && !image.isEmpty()) {
+            // Convertissez l'image en tableau de bytes
+            byte[] imageB = IOUtils.toByteArray(image.getInputStream());
+            // Associez les données de l'image au type de prêt
+            loanType.setImage(imageB);
+        }
 
-       return LoanTypeRepository.save(loanType);
+        // Sauvegardez le type de prêt dans la base de données
+        return LoanTypeRepository.save(loanType);
     }
 
     @Override

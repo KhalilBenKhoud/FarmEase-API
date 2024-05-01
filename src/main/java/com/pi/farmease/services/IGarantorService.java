@@ -1,8 +1,10 @@
 package com.pi.farmease.services;
 
 
-import com.pi.farmease.entities.Garantor ;
+import com.pi.farmease.entities.Garantor;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,8 @@ public interface IGarantorService {
     void updateGarantor(Garantor garantor, Long idGarantor);
 
     void DeleteGarantor(Long idGarantor);
-
+    public void savePdfDocumentForLastGarantor(MultipartFile file) throws IOException;
+    public byte[] getPdfDocumentForLastGarantor() ;
+    public Optional<Garantor> findLastGarantor() ;
 
 }

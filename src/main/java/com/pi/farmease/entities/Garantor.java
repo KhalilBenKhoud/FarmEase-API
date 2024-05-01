@@ -25,6 +25,9 @@ public class Garantor implements Serializable {
     private String workGarantor ;
     private String qrString;
 
+    @Lob
+    private byte[] pdfDocument;
+
     public String getQrString() {
         return qrString;
     }

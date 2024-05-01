@@ -1,16 +1,18 @@
 package com.pi.farmease.controllers;
 
 
-
-import com.pi.farmease.entities.Loan_Type ;
-import com.pi.farmease.services.ILoanTypeService ;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pi.farmease.entities.Loan_Type;
+import com.pi.farmease.services.ILoanTypeService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,9 +43,27 @@ public class LoanTypeController {
 
 
     @PostMapping("/LoanType")
-    public Loan_Type addLoanType(@RequestBody Loan_Type Loan_Type)
-    {
-        return LoanTypeService.addLoanType(Loan_Type);
+    public ResponseEntity<Loan_Type> addLoanType(@RequestPart("loanType") String loanTypeJson, @RequestPart("image") MultipartFile image) {
+        // Convertir la représentation JSON de l'entité en objet Java
+        ObjectMapper objectMapper = new ObjectMapper();
+        Loan_Type loanType = null;
+        try {
+            loanType = objectMapper.readValue(loanTypeJson, Loan_Type.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Gérer l'erreur de désérialisation JSON
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        // Appeler le service pour ajouter le type de prêt avec l'image
+        try {
+            Loan_Type savedLoanType = LoanTypeService.addLoanType(loanType, image);
+            return ResponseEntity.ok(savedLoanType);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Gérer l'erreur de traitement de l'image
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/LoanType/{loanType_id}")

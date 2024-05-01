@@ -15,14 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -136,27 +134,7 @@ public class CreditController {
     }
 
 
-    @GetMapping("/export/excel/{idCredit}/{mnttotl}/{period}/{interst}")
-    @ResponseBody
-    public void exportToExcel(HttpServletResponse response, @PathVariable("idCredit") int idCredit,
-                              @PathVariable("mnttotl") float mnttotl, @PathVariable("period") float period,
-                              @PathVariable("interst") float interst) throws IOException {
 
-        Credit cr = creditservice.getcreditById(idCredit); // Récupérer l'objet Credit à partir de l'id
-
-        response.setContentType("application/octet-stream");
-        String headerKey = "Content-Disposition";
-        String headervalue = "attachment; filename=Tableau_Credit_N_" + cr.getIdCredit() + ".xlsx";
-        response.setHeader(headerKey, headervalue);
-
-        List<Amortisement> amortisementList = creditservice.amortisement(idCredit); // Récupérer les amortissements sous forme de liste
-        Amortisement[] amortisements = amortisementList.toArray(new Amortisement[amortisementList.size()]); // Convertir la liste en tableau
-
-
-        List<Amortisement> list = Arrays.asList(amortisements);
-        com.pi.farmease.services.UserExcelExporter exp = new com.pi.farmease.services.UserExcelExporter(list);
-        exp.export(response);
-    }
 
 
     @GetMapping("/excel")
@@ -202,10 +180,17 @@ public class CreditController {
                     amortisement.getAmount());
         }
         return dataList;
+
+
+
+
     }
 
 
-
+    @GetMapping("/credits/average")
+    public double getAverageCreditAmount() {
+        return creditservice.calculateTotalAmount() ; // Appel de la méthode du service
+    }
 }
 
 

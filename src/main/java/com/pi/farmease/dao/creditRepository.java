@@ -22,5 +22,8 @@ public interface creditRepository extends JpaRepository<Credit, Long> {
     Credit getLatestCompletedCreditByClientId(@Param("clientId") Long clientId);
 
 
+
+
+
 }
 
