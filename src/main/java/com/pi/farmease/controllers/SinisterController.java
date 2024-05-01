@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sinisters")
+@RequestMapping("/api/v1/sinisters")
 @RequiredArgsConstructor
 public class SinisterController {
 
@@ -24,6 +24,12 @@ public class SinisterController {
     @GetMapping
     public ResponseEntity<List<Sinister>> getAllSinisters() {
         List<Sinister> sinisters = sinisterService.getAllSinisters();
+        return ResponseEntity.ok(sinisters);
+    }
+
+    @GetMapping("/byInsurance/{insuranceId}")
+    public ResponseEntity<List<Sinister>> getSinistersByInsuranceId(@PathVariable int insuranceId) {
+        List<Sinister> sinisters = sinisterService.getSinistersByInsuranceId(insuranceId);
         return ResponseEntity.ok(sinisters);
     }
 
@@ -38,8 +44,8 @@ public class SinisterController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Sinister> createSinister(@RequestBody Sinister sinister) {
-        Sinister createdSinister = sinisterService.saveSinister(sinister);
+    public ResponseEntity<Sinister> createSinister(@RequestBody Sinister sinister, @RequestParam("insuranceId") int insuranceId) {
+        Sinister createdSinister = sinisterService.saveSinister(sinister, insuranceId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSinister);
     }
 

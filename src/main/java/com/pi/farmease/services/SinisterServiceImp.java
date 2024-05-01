@@ -1,7 +1,10 @@
 package com.pi.farmease.services;
 
+import com.pi.farmease.dao.InsuranceRepository;
+import com.pi.farmease.entities.Insurance;
 import com.pi.farmease.entities.Sinister;
 import com.pi.farmease.dao.SinisterRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -19,15 +23,28 @@ import java.util.UUID;
 public class SinisterServiceImp implements SinisterService {
 
     private final SinisterRepository sinisterRepository;
+    private final InsuranceRepository insuranceRepository;
     private static final String UPLOAD_DIR = "uploads/Sinisters/";
     private static final List<String> FORBIDDEN_WORDS = List.of("gros_mot1", "gros_mot2", "gros_mot3");
 
 
     @Override
-    public Sinister saveSinister(Sinister sinister) {
+    public Sinister saveSinister(Sinister sinister, int insuranceId) {
+        // Vérifier si l'assurance associée au sinister est présente
+        Optional<Insurance> insuranceOptional = insuranceRepository.findById(insuranceId);
+        if (insuranceOptional.isPresent()) {
+            Insurance associatedInsurance = insuranceOptional.get();
+            sinister.setInsurance(associatedInsurance);
+        } else {
+            throw new EntityNotFoundException("Insurance not found with ID: " + insuranceId);
+        }
+
+        // Valider la description du sinister
         if (containsForbiddenWords(sinister.getDescription())) {
             throw new IllegalArgumentException("La description contient des mots interdits.");
         }
+
+        // Enregistrer le sinister dans la base de données
         return sinisterRepository.save(sinister);
     }
 
@@ -54,6 +71,10 @@ public class SinisterServiceImp implements SinisterService {
         return sinisterRepository.findAll();
     }
 
+    @Override
+    public List<Sinister> getSinistersByInsuranceId(int insuranceId) {
+        return sinisterRepository.findByInsuranceId(insuranceId);
+    }
     @Override
     public String savePhoto(MultipartFile file) throws IOException {
         // Create a unique file name to prevent conflicts

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 public interface SinisterService {
-    Sinister saveSinister(Sinister sinister);
+    Sinister saveSinister(Sinister sinister, int insuranceId);
 
     Sinister updateSinister(Sinister sinister);
 
@@ -15,6 +15,8 @@ public interface SinisterService {
     Sinister getSinisterById(Integer id);
 
     List<Sinister> getAllSinisters();
+
+    List<Sinister> getSinistersByInsuranceId(int insuranceId);
 
     public String savePhoto(MultipartFile file)throws IOException;
 

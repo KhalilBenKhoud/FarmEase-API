@@ -21,8 +21,7 @@ public class EmailServiceImpl implements IEmailService {
 
     //private final TemplateEngine templateEngine;
 
-    @Value("${spring.mail.properties.verify.host}")
-    private String host;
+
     @Value("${spring.mail.username}")
     private String fromEmail;
     private final JavaMailSender emailSender;

@@ -14,4 +14,5 @@ public interface SinisterRepository extends JpaRepository<Sinister, Integer> {
     // Calculer la somme des montants pour un mois donné
     @Query("SELECT SUM(s.amount) FROM Sinister s WHERE MONTH(s.date_Sinister) = :month")
     Double getTotalAmountByMonth(int month);
+    List<Sinister> findByInsuranceId(int insuranceId);
 }
