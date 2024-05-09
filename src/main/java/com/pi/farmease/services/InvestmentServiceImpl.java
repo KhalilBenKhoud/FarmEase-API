@@ -35,20 +35,11 @@ public class InvestmentServiceImpl implements InvestmentService {
     private ProjectRepository projectRepository;
     @Autowired
     private PerformanceRepository performanceRepository;
-    @Autowired
-    private TransactionService transactionService;
 
     @Override
     public Investment createInvestment(Investment requestBody, Long projectId, Principal connected) {
         User connectedUser = userService.getCurrentUser(connected);
         Wallet wallet = connectedUser.getWallet();
-        Project project = projectRepository.findById(projectId).orElse(null);
-        if (project == null) {
-            throw new BusinessException("Project not found with id: " + projectId);
-        }
-        assert project != null;
-        User projectOwner = project.getCreator();
-        double amountInvested  = requestBody.getAmount();
 
         double newBalance = wallet.getBalance() - requestBody.getAmount();
         if (newBalance < 0) {
@@ -58,10 +49,10 @@ public class InvestmentServiceImpl implements InvestmentService {
         walletRepository.save(wallet);
 
         try {
-            //Project project = projectRepository.findById(projectId).orElse(null);
-//            if (project == null) {
-//                throw new BusinessException("Project not found with id: " + projectId);
-//            }
+            Project project = projectRepository.findById(projectId).orElse(null);
+            if (project == null) {
+                throw new BusinessException("Project not found with id: " + projectId);
+            }
 
             // Calculate total investment dynamically without updating project's total investment
             double totalInvestment = project.getTotalInvestment() == null ? requestBody.getAmount() :
@@ -70,9 +61,6 @@ public class InvestmentServiceImpl implements InvestmentService {
             // Update project's status if the goal amount is reached
             if (totalInvestment >= project.getGoalAmount()) {
                 project.setProjectStatus(ProjectStatus.FUNDED);
-
-            }else if(totalInvestment == project.getGoalAmount()) {
-                project.setProjectStatus(ProjectStatus.PENDING);
             }
 
             // Calculate investor's ownership stake
@@ -109,7 +97,6 @@ public class InvestmentServiceImpl implements InvestmentService {
                     "Sincerely,\n" +
                     "FARMEASE Team";
             sendInvestmentNotification(investorEmail, subject, body);
-            transactionService.transferMoneyFromUsertoUser(connectedUser, projectOwner, amountInvested);
 
             // Save investment
             return investmentRepository.save(investment);

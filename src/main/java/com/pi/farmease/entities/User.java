@@ -67,11 +67,11 @@ public class User implements UserDetails {
     private List<Application> applications ;
 
 
-    @OneToMany(mappedBy = "creator" ,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "creator")
     @JsonManagedReference
     private List<Project> createdProjects;
 
-    @OneToMany(mappedBy = "investor" , fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "investor")
     @JsonManagedReference
     private List<Investment> investments;
 
