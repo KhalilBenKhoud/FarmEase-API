@@ -29,6 +29,8 @@ public class Sinister {
     private TypeSinister type ;
     @Enumerated(EnumType.STRING)
     private StatusSinister status ;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Location address;
 
     @ManyToOne
     private Insurance insurance;

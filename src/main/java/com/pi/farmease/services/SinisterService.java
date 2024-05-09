@@ -27,5 +27,6 @@ public interface SinisterService {
 
     // Nouvelle méthode pour récupérer les statistiques des sinistres par mois
     String getSinisterStatisticsByMonth(int month);
+    List<Object[]> findAllSinisterCoordinates();
 
 }

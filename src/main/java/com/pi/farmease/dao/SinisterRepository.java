@@ -15,4 +15,7 @@ public interface SinisterRepository extends JpaRepository<Sinister, Integer> {
     @Query("SELECT SUM(s.amount) FROM Sinister s WHERE MONTH(s.date_Sinister) = :month")
     Double getTotalAmountByMonth(int month);
     List<Sinister> findByInsuranceId(int insuranceId);
+
+    @Query("SELECT u.address.latitude, u.address.longitude FROM Sinister u")
+    List<Object[]> findAllSinisterCoordinates();
 }

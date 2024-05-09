@@ -50,13 +50,13 @@ public class InsuranceController {
         }
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Insurance> createInsurance(@RequestBody Insurance insurance, Principal connectedUser) {
+    @PostMapping("/add/{duration}")
+    public ResponseEntity<Insurance> createInsurance(@RequestBody Insurance insurance,@PathVariable int duration , Principal connectedUser) {
         if (connectedUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Insurance createdInsurance = insuranceService.saveInsurance(insurance, connectedUser);
+        Insurance createdInsurance = insuranceService.saveInsurance(insurance, connectedUser , duration);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInsurance);
     }
 

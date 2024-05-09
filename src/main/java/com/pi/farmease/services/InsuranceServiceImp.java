@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,15 +54,19 @@ public class InsuranceServiceImp implements InsuranceService{
     // Méthode pour enregistrer une assurance
 
     @Override
-    public Insurance saveInsurance(Insurance insurance, Principal connected) {
+    public Insurance saveInsurance(Insurance insurance, Principal connected, int contractDuration) {
         /////////////////MAILING//////////////////////////
        // emailService.sendSimpleMailMessage(insurance,insurance.getUser().getEmail());
         //////////////////////////////////////////////////
         Insurance newInsurance = Insurance.builder()
                 .coverage_amount(insurance.getCoverage_amount())
                 .start_date(LocalDate.now())
-                .end_date(insurance.getStart_date().plusYears(1))
+                .end_date(LocalDate.now().plusMonths(contractDuration))
                 .user(userService.getCurrentUser(connected))
+                .sinisters(new ArrayList<>())
+                .premium(insurance.getPremium())
+                .type(insurance.getType())
+                .status(StatusInsurance.ACTIVE)
                 .build();
 
 

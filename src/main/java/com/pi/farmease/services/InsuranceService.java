@@ -10,7 +10,7 @@ public interface InsuranceService {
     List<Insurance> getAllInsurances();
     List<Insurance> getInsurancesByCurrentUser(Principal connectedUser);
     Insurance getInsuranceById(Integer id);
-    Insurance saveInsurance(Insurance insurance, Principal connected);
+    Insurance saveInsurance(Insurance insurance, Principal connected, int duration);
     Insurance updateInsurance(Insurance insurance , Principal connected);
     void deleteInsurance(Integer id);
     public void checkInsuranceExpiration();

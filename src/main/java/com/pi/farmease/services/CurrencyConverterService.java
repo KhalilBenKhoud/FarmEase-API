@@ -28,7 +28,7 @@ public class CurrencyConverterService {
         double convertedAmount = amount * exchangeRate;
 
         // Create an explanatory message
-        String message = String.format("%.2f %s is equivalent to %.2f %s", amount, fromCurrency, convertedAmount, toCurrency);
+        String message = String.format("%.2f", convertedAmount);
 
         return message;
     }

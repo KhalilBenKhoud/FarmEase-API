@@ -43,23 +43,23 @@ public class SinisterController {
         }
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Sinister> createSinister(@RequestBody Sinister sinister, @RequestParam("insuranceId") int insuranceId) {
+    @PostMapping("/add/{insuranceId}")
+    public ResponseEntity<Sinister> createSinister(@RequestBody Sinister sinister, @PathVariable int insuranceId) {
         Sinister createdSinister = sinisterService.saveSinister(sinister, insuranceId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSinister);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Sinister> updateSinister(@PathVariable("id") Integer id, @RequestBody Sinister sinisterDetails) {
-        Sinister existingSinister = sinisterService.getSinisterById(id);
-        if (existingSinister != null) {
-            sinisterDetails.setId(id);
-            Sinister updatedSinister = sinisterService.updateSinister(sinisterDetails);
-            return ResponseEntity.ok(updatedSinister);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    //@PutMapping("/{id}")
+    //public ResponseEntity<Sinister> updateSinister(@PathVariable("id") Integer id, @RequestBody Sinister sinisterDetails) {
+    //    Sinister existingSinister = sinisterService.getSinisterById(id);
+   //     if (existingSinister != null) {
+    //        sinisterDetails.setId(id);
+    //        Sinister updatedSinister = sinisterService.updateSinister(sinisterDetails);
+    //        return ResponseEntity.ok(updatedSinister);
+     //   } else {
+   //         return ResponseEntity.notFound().build();
+    //    }
+   // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSinister(@PathVariable("id") Integer id) {
@@ -104,4 +104,25 @@ public class SinisterController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/findAllSinisterCoordinates")
+    public List<Object[]> findAllSinisterCoordinates() {
+        return sinisterService.findAllSinisterCoordinates();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Sinister> updateSinister(@PathVariable("id") Integer id, @RequestBody Sinister sinisterDetails) {
+        Sinister existingSinister = sinisterService.getSinisterById(id);
+        if (existingSinister != null) {
+            try {
+                Sinister updatedSinister = sinisterService.updateSinister(sinisterDetails);
+                return ResponseEntity.ok(updatedSinister);
+            } catch (IllegalArgumentException e) {
+                // If the description contains forbidden words
+                return ResponseEntity.badRequest().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

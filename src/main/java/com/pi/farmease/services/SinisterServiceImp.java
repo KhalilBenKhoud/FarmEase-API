@@ -4,6 +4,7 @@ import com.pi.farmease.dao.InsuranceRepository;
 import com.pi.farmease.entities.Insurance;
 import com.pi.farmease.entities.Sinister;
 import com.pi.farmease.dao.SinisterRepository;
+import com.pi.farmease.entities.enumerations.StatusSinister;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,20 +32,9 @@ public class SinisterServiceImp implements SinisterService {
     @Override
     public Sinister saveSinister(Sinister sinister, int insuranceId) {
         // Vérifier si l'assurance associée au sinister est présente
-        Optional<Insurance> insuranceOptional = insuranceRepository.findById(insuranceId);
-        if (insuranceOptional.isPresent()) {
-            Insurance associatedInsurance = insuranceOptional.get();
-            sinister.setInsurance(associatedInsurance);
-        } else {
-            throw new EntityNotFoundException("Insurance not found with ID: " + insuranceId);
-        }
-
-        // Valider la description du sinister
-        if (containsForbiddenWords(sinister.getDescription())) {
-            throw new IllegalArgumentException("La description contient des mots interdits.");
-        }
-
-        // Enregistrer le sinister dans la base de données
+        Insurance concerned = insuranceRepository.findById(insuranceId).orElse(null) ;
+        sinister.setInsurance(concerned);
+        sinister.setStatus(StatusSinister.UNDER_REVIEW);
         return sinisterRepository.save(sinister);
     }
 
@@ -127,5 +117,9 @@ public class SinisterServiceImp implements SinisterService {
         double totalAmount = sinisters.stream().mapToDouble(Sinister::getAmount).sum();
         return String.format("Le nombre de sinistres du mois %d est %d, et la somme des montants est %.2f",
                 month, sinisters.size(), totalAmount);
+    }
+
+    public List<Object[]> findAllSinisterCoordinates(){
+        return sinisterRepository.findAllSinisterCoordinates();
     }
 }
