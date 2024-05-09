@@ -40,7 +40,10 @@ public class SecurityConfig  implements WebMvcConfigurer {
     private final AuthenticationProvider authenticationProvider ;
 
 
-
+    String[] whiteList = {
+            "/api/v1/auth/**",
+            "/image/**"
+    } ;
 
 
     @Bean
@@ -51,7 +54,7 @@ public class SecurityConfig  implements WebMvcConfigurer {
                   cors.configurationSource(corsConfigurationSource());
               })
               .authorizeHttpRequests(req ->
-              req.requestMatchers("/api/v1/auth/**")
+              req.requestMatchers(whiteList)
               .permitAll()
               .anyRequest()
               .authenticated()
@@ -81,6 +84,7 @@ public class SecurityConfig  implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new
                 UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
 
     }

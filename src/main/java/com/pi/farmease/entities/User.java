@@ -90,11 +90,12 @@ public class User implements UserDetails {
         return enabled ;
     }
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private Set<Product> likedProduct;
     @JsonIgnore
     @OneToOne
     private Cart cart;
-
+    @OneToMany
+    private Set<Product> Products;
 
 }

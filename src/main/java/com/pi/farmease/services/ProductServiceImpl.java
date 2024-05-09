@@ -17,9 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -32,8 +30,21 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public Product edit(Product p) {
-        return productRepository.save(p);
+    public Product edit(Long productId, Product updatedProduct) {
+        // Vérifier si le produit existe dans la base de données
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
+existingProduct.setDateAdded(LocalDateTime.now());
+        // Mettre à jour les champs du produit existant avec les valeurs du produit mis à jour
+        existingProduct.setProductName(updatedProduct.getProductName());
+        existingProduct.setProductDescription(updatedProduct.getProductDescription());
+        existingProduct.setProductPrice(updatedProduct.getProductPrice());
+        existingProduct.setProductStock(updatedProduct.getProductStock());
+        existingProduct.setProductCategory(updatedProduct.getProductCategory());
+
+
+        // Sauvegarder et retourner le produit mis à jour
+        return productRepository.save(existingProduct);
     }
 
     @Override
@@ -52,8 +63,9 @@ public class ProductServiceImpl implements ProductService {
 
     }
     @Override
-    public Product toggleLike(Product a, User u) {
-        Product p=productRepository.findById(a.getProductId()).get();
+    public Product toggleLike(Long productId, Principal connected) {
+        User u = userService.getCurrentUser(connected) ;
+        Product p=productRepository.findById(productId).get();
         if (p.getLikedByUsers().contains(u)){
             p.getLikedByUsers().remove(u);
             u.getLikedProduct().remove(p);
@@ -66,16 +78,16 @@ public class ProductServiceImpl implements ProductService {
         return p;
     }
 
+    public List<Product> trierProduitsParPrix() {
+        // Implémentez ici la logique de tri des produits par prix
+        // Par exemple, utilisez productRepository pour récupérer les produits triés
+        return productRepository.findByOrderByProductPriceAsc(); // Exemple : trier par ordre croissant de prix
+    }
+
     @Override
     public List<Product> getMostLikedProducts() {
         // Retrieve all products from the repository
-        List<Product> products = productRepository.findAll();
-
-        // Sort the products in descending order of likes using a comparator
-        return products.stream()
-                .sorted(Comparator.comparingLong(p -> p.getLikedByUsers().size())) // Get size directly
-                .collect(Collectors.toList());
-
+        return productRepository.findMostLikedProducts();
     }
 
     @Override
@@ -102,30 +114,9 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getProductsByName(String productName) {
         return productRepository.findByProductName(productName);
     }
-//    @Scheduled(cron = "0 */2 * * * *") // Exécuter toutes les deux minutes
-//@Scheduled(cron = "0 0 0 1 */6 ?") // Exécuter tous les 6 mois (le 1er de chaque 6ème mois)
-//public void updateProductPrice() {
-//    List<Product> products = productRepository.findAll();
-//
-//    LocalDateTime now = LocalDateTime.now();
-//
-//    for (Product product : products) {
-//        // Calculer la différence entre la date actuelle et la date d'ajout du produit
-//        Duration duration = Duration.between(product.getDateAdded(), now);
-//
-//        // Vérifier si la différence est égale à 6 mois (en secondes)
-//        long sixMonthsInSeconds = 6L * 30L * 24L * 60L * 60L; // 6 mois en secondes
-//        if (duration.getSeconds() >= sixMonthsInSeconds) {
-//            // Effectuer la mise à jour du prix du produit
-//            Double newPrice = product.getProductPrice() * 0.8; // 20% de réduction
-//            product.setProductPrice(newPrice);
-//        }
-//    }
-//
-//    productRepository.saveAll(products);
-//}
-  //  @Scheduled(fixedRate = 120000) // Vérifie toutes les 2 minutes
-  @Scheduled(cron = "0 0 0 */2 * *")
+
+    @Scheduled(fixedRate = 120000) // Vérifie toutes les 2 minutes
+  //@Scheduled(cron = "0 0 0 */2 * *")
     public void checkOutOfStockProducts() {
         List<Product> outOfStockProducts = productRepository.findByProductStockEquals(0);
         for (Product product : outOfStockProducts) {
@@ -143,6 +134,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> findProductsInPriceRange(float minPrice, float maxPrice) {
         return productRepository.findByProductPriceBetween(minPrice, maxPrice);
+    }
+    public Map<Long, Integer> countLikesByProduct() {
+        List<Object[]> likeCounts = productRepository.countLikesByProduct();
+        Map<Long, Integer> likesByProduct = new HashMap<>();
+
+        for (Object[] result : likeCounts) {
+            Long productId = (Long) result[0];
+            Integer likeCount = (Integer) result[1];
+            likesByProduct.put(productId, likeCount);
+        }
+
+        return likesByProduct;
     }
 
 }
