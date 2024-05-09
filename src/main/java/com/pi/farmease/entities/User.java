@@ -56,11 +56,11 @@ public class User implements UserDetails {
     private Wallet wallet ;
 
 
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator" ,fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Project> createdProjects;
 
-    @OneToMany(mappedBy = "investor")
+    @OneToMany(mappedBy = "investor" , fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Investment> investments;
 

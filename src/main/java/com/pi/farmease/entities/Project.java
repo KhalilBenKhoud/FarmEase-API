@@ -1,6 +1,7 @@
 package com.pi.farmease.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pi.farmease.entities.enumerations.ProjectStatus;
 import jakarta.persistence.*;
@@ -38,6 +39,7 @@ public class Project implements Serializable {
 
     private Double goalAmount;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date deadline;
 
     private Double equityOffered;
@@ -62,12 +64,12 @@ public class Project implements Serializable {
     @JsonIgnore
     private User creator;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project" , fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Investment> investments;
 
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project" , fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Performance> performances;
 

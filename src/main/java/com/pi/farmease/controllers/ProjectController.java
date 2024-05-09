@@ -6,6 +6,7 @@ import com.pi.farmease.services.PdfService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.pi.farmease.entities.Project;
@@ -23,6 +24,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/projects")
 @AllArgsConstructor
+
 public class ProjectController {
 
     private ProjectService projectService;
@@ -53,19 +55,19 @@ public class ProjectController {
     }
 
     // Create a new project
-    @PostMapping("/createProject")
+    @PostMapping("/createproject")
     public ResponseEntity<Project> createProject(
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam Double netIncomeLastYear,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageUrl,
-            @RequestParam String address,
-            @RequestParam Double goalAmount,
-            @RequestParam Date deadline,
-            @RequestParam Double equityOffered,
-            @RequestParam Double dividendPayoutRatio,
-            @RequestParam Double totalInvestment,
-            @RequestParam ProjectCategory projectCategory,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) Double goalAmount,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date deadline,
+            @RequestParam(required = false) Double equityOffered,
+            @RequestParam(required = false) Double dividendPayoutRatio,
+            @RequestParam(required = false) Double totalInvestment,
+            @RequestParam(required = false) ProjectCategory projectCategory,
             Principal connected) throws IOException {
 
         Project project = Project.builder()

@@ -35,24 +35,31 @@ public class ProjectServiceImpl implements ProjectService {
         User connectedUser = userService.getCurrentUser(connected);
 
         // Upload project image
-        String uniqueImageFileName = UUID.randomUUID().toString() + "_" + imageUrl.getOriginalFilename();
-        String imageUploadDirectory = "src\\main\\resources\\image";
-        Path imageUploadPath = Path.of(imageUploadDirectory);
-        if (!Files.exists(imageUploadPath)) {
-            Files.createDirectories(imageUploadPath);
-        }
-        Path imageFilePath = imageUploadPath.resolve(uniqueImageFileName);
-        Files.copy(imageUrl.getInputStream(), imageFilePath, StandardCopyOption.REPLACE_EXISTING);
-
-//        // Upload CSV file
-//        String uniqueCsvFileName = UUID.randomUUID().toString() + "_" + csvFile.getOriginalFilename();
-//        String csvUploadDirectory = "src\\main\\resources\\csv";
-//        Path csvUploadPath = Path.of(csvUploadDirectory);
-//        if (!Files.exists(csvUploadPath)) {
-//            Files.createDirectories(csvUploadPath);
+//        String uniqueImageFileName = UUID.randomUUID().toString() + "_" + imageUrl.getOriginalFilename();
+//        String imageUploadDirectory = "src\\main\\resources\\image";
+//        Path imageUploadPath = Path.of(imageUploadDirectory);
+//        if (!Files.exists(imageUploadPath)) {
+//            Files.createDirectories(imageUploadPath);
 //        }
-//        Path csvFilePath = csvUploadPath.resolve(uniqueCsvFileName);
-//        Files.copy(csvFile.getInputStream(), csvFilePath, StandardCopyOption.REPLACE_EXISTING);
+//        Path imageFilePath = imageUploadPath.resolve(uniqueImageFileName);
+//        Files.copy(imageUrl.getInputStream(), imageFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+        String uniqueImageFileName = null;
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            uniqueImageFileName = UUID.randomUUID().toString() + "_" + imageUrl.getOriginalFilename();
+            String imageUploadDirectory = "src\\main\\resources\\image";
+            Path imageUploadPath = Path.of(imageUploadDirectory);
+            if (!Files.exists(imageUploadPath)) {
+                Files.createDirectories(imageUploadPath);
+            }
+            Path imageFilePath = imageUploadPath.resolve(uniqueImageFileName);
+            Files.copy(imageUrl.getInputStream(), imageFilePath, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            // Handle the case when imageUrl is null or empty (no image uploaded)
+            // For example, you can set a default image or log a message
+            System.out.println("No image uploaded for the project.");
+        }
+
 
         // Create project entity
         Project project = Project.builder()
