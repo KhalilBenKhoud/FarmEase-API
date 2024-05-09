@@ -2,6 +2,7 @@
 package com.pi.farmease.config;
 
 import com.pi.farmease.config.JwtAuthenticationFilter;
+import com.pi.farmease.entities.enumerations.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,6 +57,7 @@ public class SecurityConfig  implements WebMvcConfigurer {
               .authorizeHttpRequests(req ->
               req.requestMatchers(whiteList)
               .permitAll()
+                      .requestMatchers("/api/v1/admin/**").hasAnyAuthority(Role.ADMIN.toString())
               .anyRequest()
               .authenticated()
               )
