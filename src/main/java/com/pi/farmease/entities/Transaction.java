@@ -32,14 +32,9 @@ public class Transaction {
 
     @ManyToOne
     private User recipient ;
-}
-
-
 
     private double amount ;
 
-    @ManyToOne
-    private User recipient ;
 
     @ManyToOne
     private User sender ;
