@@ -18,7 +18,7 @@ import java.util.Set;
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long cartId;
+        Long cartId;
     String cartName;
 
  Double totalPrice;
@@ -26,8 +26,8 @@ public class Cart {
 
 
     String couponCode;
-@JsonIgnore
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.REMOVE, fetch =  FetchType.EAGER)
     private Set<CartItems> cartItems = new HashSet<>();
     @JsonIgnore
     @OneToOne(mappedBy = "cart")
