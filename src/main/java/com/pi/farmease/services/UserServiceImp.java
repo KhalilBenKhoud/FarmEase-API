@@ -5,7 +5,10 @@ import com.pi.farmease.dao.UserRepository;
 import com.pi.farmease.dao.VerifyAccountTokenRepository;
 import com.pi.farmease.dto.requests.UpdateUserRequest;
 import com.pi.farmease.entities.User;
-import jakarta.servlet.ServletContext;
+
+import com.pi.farmease.entities.enumerations.Role;
+
+
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +20,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+
+import java.util.List;
+
 import java.util.UUID;
 
 import java.security.Principal;
@@ -64,53 +70,75 @@ public class UserServiceImp implements UserService{
 
     @Override
     public String currentUploadDirectory( Principal connectedUser) {
+
         User current = getCurrentUser(connectedUser) ;
        return  "src/main/resources/user_images/"  + "user" +current.getId()  ;
-    }
-    @Override
-    public void addProfileImage(MultipartFile imageFile, Principal connectedUser) throws IOException {
-
-        User current = getCurrentUser(connectedUser) ;
-        String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-        String uploadDirectory = currentUploadDirectory(connectedUser) ;
-        Path uploadPath = Path.of(uploadDirectory);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-        Path filePath = uploadPath.resolve(uniqueFileName);
-        Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        current.setImageName(uniqueFileName);
-        userRepository.save(current) ;
 
     }
 
-    @Override
-    public byte[] getProfileImage(Principal connectedUser) throws IOException {
-        String uploadDirectory = currentUploadDirectory(connectedUser) ;
-       String currentUserImageName = getCurrentUser(connectedUser).getImageName() ;
-        Path imagePath = Path.of(uploadDirectory, currentUserImageName);
+        @Override
+        public void addProfileImage (MultipartFile imageFile, Principal connectedUser) throws IOException {
 
-        if (Files.exists(imagePath)) {
-            return Files.readAllBytes(imagePath);
-        } else {
-            return null; // Handle missing images
+            User current = getCurrentUser(connectedUser);
+            String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+            String uploadDirectory = currentUploadDirectory(connectedUser);
+            Path uploadPath = Path.of(uploadDirectory);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            Path filePath = uploadPath.resolve(uniqueFileName);
+            Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            current.setImageName(uniqueFileName);
+            userRepository.save(current);
+
         }
 
+        @Override
+        public byte[] getProfileImage (Principal connectedUser) throws IOException {
+            String uploadDirectory = currentUploadDirectory(connectedUser);
+            String currentUserImageName = getCurrentUser(connectedUser).getImageName();
+            Path imagePath = Path.of(uploadDirectory, currentUserImageName);
 
-    }
+            if (Files.exists(imagePath)) {
+                return Files.readAllBytes(imagePath);
+            } else {
+                return null; // Handle missing images
+            }
 
-    @Override
-    public void updateProfileImage(MultipartFile imageFile, Principal connectedUser) throws IOException {
-        String uploadDirectory = currentUploadDirectory(connectedUser) ;
-        String currentUserImageName = getCurrentUser(connectedUser).getImageName() ;
-        Path imagePath = Path.of(uploadDirectory, currentUserImageName);
-        if (Files.exists(imagePath)) {
-            Files.delete(imagePath);
 
         }
-        addProfileImage(imageFile,connectedUser) ;
+
+        @Override
+        public void updateProfileImage (MultipartFile imageFile, Principal connectedUser) throws IOException {
+            String uploadDirectory = currentUploadDirectory(connectedUser);
+            String currentUserImageName = getCurrentUser(connectedUser).getImageName();
+            Path imagePath = Path.of(uploadDirectory, currentUserImageName);
+            if (Files.exists(imagePath)) {
+                Files.delete(imagePath);
+
+            }
+            addProfileImage(imageFile, connectedUser);
+        }
+
+
+        @Override
+        public User getById (Long id){
+            return userRepository.findById(id).get();
+        }
+        public List<User> findAdminUsers () {
+            return userRepository.findByRole(Role.ADMIN);
+        }
+
+        @Override
+        public User add (User user){
+            return userRepository.save(user);
+        }
+        @Override
+        public User edit (User user){
+            return userRepository.save(user);
+        }
+
+
     }
 
 
-
-}

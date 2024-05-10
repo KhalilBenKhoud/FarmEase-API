@@ -21,6 +21,7 @@ public class Wallet {
     private WalletStatus status  ;
 
     private double balance ;
+
     private String ownerName ;
 
     @OneToOne(mappedBy = "wallet")
