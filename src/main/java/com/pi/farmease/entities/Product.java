@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 
-public class Product{
+public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     Long productId;
@@ -38,11 +39,10 @@ public class Product{
 
     LocalDateTime dateAdded;
 
-
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "likedProduct")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "likedProduct" , fetch = FetchType.EAGER)
     private Set<User> likedByUsers;
-public enum ProductCategory{
+    public enum ProductCategory{
     FARMER,FISHER
-}
+    }
 }

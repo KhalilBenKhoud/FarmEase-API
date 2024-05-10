@@ -15,12 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/cart")
+@RequestMapping("/api/v1/cart")
 public class CartController {
 
 
@@ -32,21 +33,25 @@ public class CartController {
     UserService userService ;
 
 
-
-    @PostMapping("/addProductToCart")
-    public ResponseEntity<String> addToCart(@RequestParam Long productId, @RequestParam Integer quantity, @RequestParam Long userId) {
+    @GetMapping("/totalPrice")
+    public ResponseEntity<Double> getTotalCartPrice(Principal connected) {
+        Double totalPrice = cartService.getTotalCartPrice(connected);
+        return ResponseEntity.ok(totalPrice);
+    }
+    @PostMapping("/addProductToCart/{productId}/{quantity}")
+    public ResponseEntity<String> addToCart(@PathVariable Long productId, @PathVariable  Integer quantity, Principal connected) {
         try {
-            cartService.addToCart(productId, quantity, userId);
+            cartService.addToCart(productId, quantity, connected);
             return ResponseEntity.ok("Produit ajouté au panier avec succès !");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    @DeleteMapping("/remove-product/{productId}/{userId}")
-    public ResponseEntity<?> removeFromCartByProductId(@PathVariable Long productId, @PathVariable Long userId) {
+    @DeleteMapping("/remove-product/{productId}")
+    public ResponseEntity<?> removeFromCartByProductId(@PathVariable Long productId,Principal connected) {
         try {
-            cartService.removeFromCartByProductId(productId, userId);
+            cartService.removeFromCartByProductId(productId, connected);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -71,28 +76,28 @@ public class CartController {
         return cartService.selectAllCart();
     }
 
-    @GetMapping("/cartitemsByUser/{userId}")
-    public List<CartItems> getAllCartItemsByUserId(@PathVariable Long userId) {
-        return cartService.selectAll(userId);
+    @GetMapping("/cartitemsByUser")
+    public List<CartItems> getAllCartItemsByUserId( Principal connected) {
+        return cartService.selectAll(connected);
     }
 
-    @GetMapping("/cartDetail/{userId}")
-    public List<Map<String, Object>> retrieveCart(@PathVariable Long userId) {
-        return cartService.retrieveCart(userId);
+    @GetMapping("/cartDetail")
+    public List<Map<String, Object>> retrieveCart(Principal connected) {
+        return cartService.retrieveCart(connected);
     }
-    @GetMapping("/calculateMonthlyPrices")
-    public ResponseEntity<List<Double>> calculateMonthlyPrices(@RequestParam Long cartId, @RequestParam Integer numberOfMonths, @RequestParam Double downPayment) {
+    @GetMapping("/calculateMonthlyPrices/{numberOfMonths}/{downPayment}")
+    public ResponseEntity<List<Double>> calculateMonthlyPrices( Principal connected, @PathVariable Integer numberOfMonths, @PathVariable Double downPayment) {
         try {
-            List<Double> monthlyPrices = cartService.calculateMonthlyPrices(cartId, numberOfMonths, downPayment);
+            List<Double> monthlyPrices = cartService.calculateMonthlyPrices(connected, numberOfMonths, downPayment);
             return ResponseEntity.ok(monthlyPrices);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PostMapping("/{cartId}/applyCoupon")
-    public ResponseEntity<String> applyCouponToCart(@PathVariable Long cartId, @RequestParam String couponCode) {
+    @PostMapping("/applyCoupon/{couponCode}")
+    public ResponseEntity<String> applyCouponToCart(Principal connected, @PathVariable String couponCode) {
         try {
-            cartService.applyCouponToCart(cartId, couponCode);
+            cartService.applyCouponToCart(connected, couponCode);
             return ResponseEntity.ok("Coupon applied successfully to the cart.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to apply coupon to the cart.");
@@ -109,14 +114,15 @@ public class CartController {
     }
 
 
-    @PostMapping("/confirm/{userId}")
-    public ResponseEntity<String> confirmPurchase(@PathVariable Long userId) {
-        User user = userService.getById(userId);
+    @PostMapping("/confirm")
+    public ResponseEntity<String> confirmPurchase(Principal connected) {
+        User user = userService.getCurrentUser(connected) ;
+      //  User user = userService.getById(userId);
         if (user == null) {
-            return ResponseEntity.badRequest().body("User with ID " + userId + " not found.");
+            return ResponseEntity.badRequest().body("User with ID " + user.getId() + " not found.");
         }
         try {
-            cartService.confirmPurchase(user);
+            cartService.confirmPurchase(connected);
             return ResponseEntity.ok("Purchase confirmed successfully.");
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -124,9 +130,10 @@ public class CartController {
         }
     }
     /////////////////////////
-    @PostMapping("/{userId}/clear")
-    public ResponseEntity<String> clearCart(@PathVariable Long userId) {
-        User user = userService.getById(userId);
+    @PostMapping("/clear")
+    public ResponseEntity<String> clearCart(Principal connected) {
+        User user = userService.getCurrentUser(connected) ;
+        //User user = userService.getById(userId);
         if (user == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
