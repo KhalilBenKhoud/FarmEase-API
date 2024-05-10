@@ -1,6 +1,7 @@
 package com.pi.farmease.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pi.farmease.entities.enumerations.Role;
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -22,7 +24,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class User implements UserDetails {
 
     @Id
@@ -62,6 +63,26 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Application> applications ;
 
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<Insurance> insurances ;
+
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Credit> credit;
+
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Garantor> garantor;
+
+    @OneToMany(mappedBy = "creator")
+    @JsonManagedReference
+    private List<Project> createdProjects;
+
+    @OneToMany(mappedBy = "investor")
+    @JsonManagedReference
+    private List<Investment> investments;
+
+    @OneToMany(mappedBy = "user")
+    private List<Insurance> insurances ;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -92,5 +113,13 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled ;
     }
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    private Set<Product> likedProduct;
+    @JsonIgnore
+    @OneToOne
+    private Cart cart;
+    @OneToMany
+    private Set<Product> Products;
 
 }

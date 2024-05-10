@@ -24,10 +24,12 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type ;
 
-    private double amount ;
 
     @ManyToOne
     private User recipient ;
+
+
+    private double amount ;
 
     @ManyToOne
     private User sender ;

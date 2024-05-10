@@ -1,6 +1,7 @@
 package com.pi.farmease.dto.requests;
 
 
+import com.pi.farmease.entities.enumerations.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class UpdateUserRequest {
     private String lastname ;
     private String email ;
     private String password ;
+    private Role role ;
 }

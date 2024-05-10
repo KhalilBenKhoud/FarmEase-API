@@ -10,14 +10,6 @@ import com.pi.farmease.entities.Mortgage;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.social.linkedin.api.LinkedIn;
-import org.springframework.social.linkedin.api.LinkedInProfile;
-import org.springframework.social.linkedin.api.Share;
-import org.springframework.social.linkedin.api.impl.LinkedInTemplate;
-import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.GrantType;
-import org.springframework.social.oauth2.OAuth2Operations;
-import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

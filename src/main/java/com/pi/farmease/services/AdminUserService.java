@@ -12,4 +12,9 @@ public interface AdminUserService {
     public void permitUser(Integer id) ;
 
     public List<User> usersSortedByRegistrationDate() ;
+
+    public List<User> getAll() ;
+
+    public List<User> getSortedByMoney() ;
+
 }
