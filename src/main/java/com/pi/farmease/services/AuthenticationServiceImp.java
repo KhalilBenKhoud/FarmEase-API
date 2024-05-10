@@ -212,7 +212,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         String tokenValue = uuid.toString().substring(0,6) ;
         ResetPasswordToken token = ResetPasswordToken.builder()
                 .token(tokenValue)
-                .expiryDateTime(LocalDateTime.now().plusMinutes(2))
+                .expiryDateTime(LocalDateTime.now().plusMinutes(10))
                 .user(concernedUser)
                 .build() ;
        resetPasswordTokenRepository.save(token) ;
@@ -220,6 +220,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
     }
 
     public User verifyResetPasswordToken(String token) {
+
         ResetPasswordToken givenToken = resetPasswordTokenRepository.findByToken(token).orElse(null) ;
         if(givenToken != null) {
             LocalDateTime now = LocalDateTime.now();
