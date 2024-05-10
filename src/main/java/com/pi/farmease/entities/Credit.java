@@ -1,12 +1,10 @@
 package com.pi.farmease.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,7 +12,9 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@JsonIdentityInfo(scope = Credit.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "idCredit")
 public class Credit implements Serializable {
 
     @Id
@@ -52,14 +52,14 @@ public class Credit implements Serializable {
     private status_loan status ;
 
     @ManyToOne
+
     Loan_Type loandId;
 
 
-    @OneToOne(mappedBy = "credit")
+    @OneToOne(mappedBy = "credit" , cascade = CascadeType.ALL)
     private Garantor garantor;
 
-    @ManyToOne
-    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.REFRESH)
     private User user ;
 
     public Credit(float amount, float period, float interst) {

@@ -1,12 +1,9 @@
 package com.pi.farmease.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 @Builder
@@ -14,7 +11,9 @@ import java.io.Serializable;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@JsonIdentityInfo(scope = Garantor.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "idGarantor")
 public class Garantor implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,11 +36,12 @@ public class Garantor implements Serializable {
     }
 
     @ManyToOne
-    @JsonBackReference
+
     private User user ;
 
-    @JsonIgnore
+
     @OneToOne
+
     private Credit credit;
 
 

@@ -1,7 +1,9 @@
 package com.pi.farmease.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.pi.farmease.entities.enumerations.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +23,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class User implements UserDetails {
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+public class User implements UserDetails , Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,14 +59,16 @@ public class User implements UserDetails {
     private Wallet wallet ;
 
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+
     private List<Credit> credit;
 
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+
     private List<Garantor> garantor;
 
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public List<GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name())) ;
     }
 
@@ -90,12 +97,5 @@ public class User implements UserDetails {
         return enabled ;
     }
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Message {
-        private String role;
 
-        private String content;
-    }
 }

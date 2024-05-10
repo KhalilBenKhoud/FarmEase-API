@@ -3,7 +3,6 @@ package com.pi.farmease.services;
 import com.pi.farmease.dao.UserRepository;
 import com.pi.farmease.dto.requests.UpdateUserRequest;
 import com.pi.farmease.entities.User;
-import jakarta.servlet.ServletContext;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -13,9 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID;
-
 import java.security.Principal;
+import java.util.UUID;
 
 
 @Service

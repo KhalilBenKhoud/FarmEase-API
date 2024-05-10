@@ -43,25 +43,22 @@ public class LoanTypeController {
 
 
     @PostMapping("/LoanType")
-    public ResponseEntity<Loan_Type> addLoanType(@RequestPart("loanType") String loanTypeJson, @RequestPart("image") MultipartFile image) {
-        // Convertir la représentation JSON de l'entité en objet Java
+    public ResponseEntity<Loan_Type> addLoanType(@RequestPart("loanType") String loanTypeJson,
+                                                 @RequestPart("image") MultipartFile image) {
         ObjectMapper objectMapper = new ObjectMapper();
-        Loan_Type loanType = null;
+        Loan_Type loanType;
         try {
             loanType = objectMapper.readValue(loanTypeJson, Loan_Type.class);
         } catch (IOException e) {
             e.printStackTrace();
-            // Gérer l'erreur de désérialisation JSON
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        // Appeler le service pour ajouter le type de prêt avec l'image
         try {
             Loan_Type savedLoanType = LoanTypeService.addLoanType(loanType, image);
             return ResponseEntity.ok(savedLoanType);
         } catch (IOException e) {
             e.printStackTrace();
-            // Gérer l'erreur de traitement de l'image
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -75,7 +72,9 @@ public class LoanTypeController {
             Loan_Type1.setName(LoanType.getName());
 
             Loan_Type1.setValue(LoanType.getValue());
-
+            if (LoanType.getImage() != null) {
+                Loan_Type1.setImage(LoanType.getImage());
+            }
             // Sauvegardez les modifications apportées à credit1, pas à Credit
             LoanTypeService.updateLoanType(Loan_Type1,loanType_id);
 

@@ -43,8 +43,8 @@ public class CreditController {
 
     @GetMapping("/credit/{idLoan}")
     public Credit getredits(@PathVariable Long idLoan) {
-        return creditservice.getcreditById(idLoan)
-                ;
+        return creditservice.getcreditById(idLoan);
+
     }
 
     @PostMapping("/credit")

@@ -31,6 +31,8 @@ public interface ICreditService {
     public void exportToExcel(List<String> data, String filePath , int idCredit) throws IOException ;
     public double calculateTotalAmount() ;
 
+    //List<Credit> getAcceptedCredits(Principal connected) ;
+
 
 }
 

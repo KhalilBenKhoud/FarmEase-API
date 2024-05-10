@@ -37,6 +37,7 @@ public class CreditService implements ICreditService {
     public Credit getcreditById(long idLoan) {
         return Creditrepository.findById(idLoan)
                 .orElse(null); // ou une autre valeur par défaut si nécessaire
+
     }
 
 
@@ -71,7 +72,11 @@ public class CreditService implements ICreditService {
 
     @Override
     public void updateCredit(Credit Credit, Long idLoan) {
-        Creditrepository.save(Credit);
+         Credit concerned =  Creditrepository.findById(idLoan).orElse(null) ;
+        assert concerned != null;
+        concerned.setAmount(Credit.getAmount());
+
+         Creditrepository.save(concerned);
     }
 
     public boolean existById(Long idLoan) {

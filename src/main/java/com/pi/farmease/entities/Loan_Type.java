@@ -1,10 +1,13 @@
 package com.pi.farmease.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -13,7 +16,9 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@JsonIdentityInfo(scope = Loan_Type.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "loanType_id")
 public class Loan_Type implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +34,8 @@ public class Loan_Type implements Serializable {
     private Type_Term_Loan termType ;
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="loandId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="loandId"  , fetch = FetchType.EAGER)
+
     private Set<Credit> credit;
 
 

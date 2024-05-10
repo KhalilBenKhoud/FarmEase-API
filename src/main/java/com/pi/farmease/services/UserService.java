@@ -2,8 +2,6 @@ package com.pi.farmease.services;
 
 import com.pi.farmease.dto.requests.UpdateUserRequest;
 import com.pi.farmease.entities.User;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
