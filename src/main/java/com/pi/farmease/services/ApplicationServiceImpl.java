@@ -35,33 +35,36 @@ public class ApplicationServiceImpl implements ApplicationService {
     public Optional<Application> getApplicationById(long id) {
         return applicationRepository.findById(id);
     }
+    @Override
+    public List<Application> getApplicationsByConnectedUser(Principal connectedUser) {
+        // Récupérer l'utilisateur connecté à partir de Principal
+        User user = userService.getCurrentUser(connectedUser);
 
+        // Récupérer les applications de l'utilisateur connecté
+        return applicationRepository.findByUserId(user.getId());
+    }
     @Override
     public void addApplication(Application requestBody, Principal connected, long mortgageid) {
         User connectedUser = userService.getCurrentUser(connected);
 
-
         Optional<Mortgage> mortgageOptional = mortgageRepository.findById(mortgageid);
         if (mortgageOptional.isPresent()) {
             Mortgage associatedMortgage = mortgageOptional.get();
-            // Associate the mortgage with the application
-            requestBody.setMortgage(associatedMortgage);
-            requestBody.setUser(connectedUser);
-
 
             // Crée une nouvelle application en utilisant les informations fournies dans requestBody
             Application application = Application.builder()
                     .user(connectedUser) // Utilise l'utilisateur connecté comme propriétaire de l'application
-                    .nom_application(requestBody.getNom_application())
-                    .prenom_application(requestBody.getPrenom_application())
-                    .interesting_rate_application(requestBody.getInteresting_rate_application())
+                    .nom_application(connectedUser.getFirstname()) // Ajoute le nom de l'utilisateur à l'application
+                    .prenom_application(connectedUser.getLastname()) // Ajoute le prénom de l'utilisateur à l'application
+                    .interesting_rate_application(requestBody.getInteresting_rate_application()) // Ajoute le taux d'intérêt à l'application
                     .description_application(requestBody.getDescription_application())
-                    .etat_application(requestBody.getEtat_application())
+                    .etat_application("pending")
                     .message_application(requestBody.getMessage_application())
+                    .mortgage(associatedMortgage) // Associe l'hypothèque à l'application
                     .build();
 
             // Sauvegarde la nouvelle application
-            applicationRepository.save(requestBody);
+            applicationRepository.save(application);
         } else {
             throw new EntityNotFoundException("Mortgage not found with ID: " + mortgageid);
         }
@@ -84,7 +87,36 @@ public class ApplicationServiceImpl implements ApplicationService {
         // Save the changes to the database
         applicationRepository.save(existingApplication);
     }
+    @Override
+    public void accept_application( long id) {
+        Application existingApplication = applicationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Application not found"));
 
+        // Update attributes with new values
+
+        existingApplication.setEtat_application("accepted");
+
+
+        // Save the changes to the database
+        applicationRepository.save(existingApplication);
+    }
+    @Override
+    public void refuse_application( long id) {
+        Application existingApplication = applicationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Application not found"));
+
+        // Update attributes with new values
+
+        existingApplication.setEtat_application("refused");
+
+
+        // Save the changes to the database
+        applicationRepository.save(existingApplication);
+    }
+    @Override
+    public List<Application> getApplicationsByIdMortgage(long idMortgage) {
+        return applicationRepository.findByMortgageIdMortgage(idMortgage);
+    }
     @Override
     public void exportApplicationToPdf(Application application, String filePath) throws IOException {
         try (PDDocument document = new PDDocument()) {
@@ -126,4 +158,15 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public void deleteApplication(long id) {
         applicationRepository.deleteById(id);
-    }}
+    }
+    @Override
+    public void deleteApplicationBymortgage(long idMortgage) {
+        List<Application> applicationsToDelete = applicationRepository.findByMortgageIdMortgage(idMortgage);
+        applicationRepository.deleteAll(applicationsToDelete);
+    }
+
+
+
+}
+
+

@@ -17,4 +17,9 @@ public interface ApplicationService {
 
     void updateApplication(Application application, long id);
     void deleteApplication(long id);
+    void accept_application( long id);
+    void refuse_application( long id);
+    List<Application> getApplicationsByConnectedUser(Principal connectedUser);
+    List<Application> getApplicationsByIdMortgage(long idMortgage);
+    void deleteApplicationBymortgage(long idMortgage);
 }

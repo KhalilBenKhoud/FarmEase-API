@@ -1,6 +1,7 @@
 package com.pi.farmease.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,9 +23,12 @@ public class Comment {
     private long nbr_siginal_comment;
     private long nbr_like_comment;
 
-    @ToString.Exclude
+
     @ManyToOne
+    @JsonIgnore
     Post post;
+
+
     @ManyToOne
     @JsonBackReference
     private User user ;

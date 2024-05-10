@@ -11,7 +11,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 public class Mortgage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +26,19 @@ public class Mortgage {
     private long price_mortgage;
     private String land_description;
     private double rating_mortgage;
-    @JsonIgnore
+
+    private float interest;
+
+    @OneToMany(mappedBy = "mortgage" , fetch = FetchType.EAGER)
+    private Set<Application> applications;
+
+
+
     @ToString.Exclude
 
-    @OneToMany(mappedBy = "mortgage")
-    private Set<Application> applications;
+    @ManyToMany()
+    private Set<Materiel> materiels;
+
 
 
 
