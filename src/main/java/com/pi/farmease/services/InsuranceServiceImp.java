@@ -2,6 +2,7 @@ package com.pi.farmease.services;
 
 import com.pi.farmease.entities.Insurance;
 import com.pi.farmease.dao.InsuranceRepository;
+
 import com.pi.farmease.entities.User;
 import com.pi.farmease.entities.enumerations.StatusInsurance;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,13 +23,16 @@ public class InsuranceServiceImp implements InsuranceService{
 
     private final InsuranceRepository insuranceRepository;
     private final IEmailService emailService;
+
     private final UserService userService ;
+
 
     // Méthode pour récupérer toutes les assurances
     @Override
     public List<Insurance> getAllInsurances() {
         return insuranceRepository.findAll();
     }
+
 
     // Méthode pour récupérer les assurances de l'utilisateur connecté
     @Override
@@ -52,6 +57,7 @@ public class InsuranceServiceImp implements InsuranceService{
     }
 
     // Méthode pour enregistrer une assurance
+
 
     @Override
     public Insurance saveInsurance(Insurance insurance, Principal connected, int contractDuration) {
@@ -95,6 +101,7 @@ public class InsuranceServiceImp implements InsuranceService{
         // Mettre à jour d'autres propriétés selon vos besoins
 
         // Enregistrer les modifications dans la base de données
+
         return insuranceRepository.save(insurance);
     }
 
@@ -103,6 +110,7 @@ public class InsuranceServiceImp implements InsuranceService{
     public void deleteInsurance(Integer id) {
         insuranceRepository.deleteById(id);
     }
+
 
     @Scheduled(cron = "0/5 * * * * *")
     public void checkInsuranceExpiration() {
@@ -120,6 +128,7 @@ public class InsuranceServiceImp implements InsuranceService{
         }
     }
 }
+
 
 
 /////////////////MAILING//////////////////////////

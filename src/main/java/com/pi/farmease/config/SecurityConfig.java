@@ -41,10 +41,14 @@ public class SecurityConfig  implements WebMvcConfigurer {
     private final AuthenticationProvider authenticationProvider ;
 
 
-
+    String[] whiteList = {
+            "/api/v1/auth/**",
+            "/image/**"
+    } ;
 
 
     @Bean
+
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
       http.csrf(AbstractHttpConfigurer::disable)
@@ -52,7 +56,7 @@ public class SecurityConfig  implements WebMvcConfigurer {
                   cors.configurationSource(corsConfigurationSource());
               })
               .authorizeHttpRequests(req ->
-              req.requestMatchers("/api/v1/auth/**")
+              req.requestMatchers(whiteList)
               .permitAll()
                       .requestMatchers("/api/v1/admin/**").hasAnyAuthority(Role.ADMIN.toString())
               .anyRequest()
@@ -83,7 +87,9 @@ public class SecurityConfig  implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new
                 UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
+
 
     }
 

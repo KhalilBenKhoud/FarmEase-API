@@ -8,7 +8,9 @@ public class EmailUtility {
                 +"\n\n Your insurance has been created . \n\n"
                 + "It starts on: "+i.getStart_date() +"\n"
                 + "And its active until: "+i.getEnd_date()
+
                 +"\n\nThe Farmease support Team";
+
     }
 
     public static String getVerificationUrl(String host, String token) {

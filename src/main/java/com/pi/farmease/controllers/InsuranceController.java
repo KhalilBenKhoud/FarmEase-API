@@ -10,12 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.security.Principal;
+
 import java.util.List;
 
 
 @RestController
+
 @RequestMapping("/api/v1/insurances")
+
 @RequiredArgsConstructor
 public class InsuranceController {
 
@@ -27,6 +31,7 @@ public class InsuranceController {
         List<Insurance> insurances = insuranceService.getAllInsurances();
         return ResponseEntity.ok(insurances);
     }
+
 
     @GetMapping("/insurancesByUser")
     public ResponseEntity<List<Insurance>> getInsurancesByCurrentUser(Principal connectedUser) {
@@ -40,6 +45,7 @@ public class InsuranceController {
         }
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<Insurance> getInsuranceById(@PathVariable("id") Integer id) {
         Insurance insurance = insuranceService.getInsuranceById(id);
@@ -50,6 +56,7 @@ public class InsuranceController {
         }
     }
 
+
     @PostMapping("/add/{duration}")
     public ResponseEntity<Insurance> createInsurance(@RequestBody Insurance insurance,@PathVariable int duration , Principal connectedUser) {
         if (connectedUser == null) {
@@ -57,10 +64,12 @@ public class InsuranceController {
         }
 
         Insurance createdInsurance = insuranceService.saveInsurance(insurance, connectedUser , duration);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInsurance);
     }
 
     @PutMapping("/update/{id}")
+
     public ResponseEntity<Insurance> updateInsurance(@PathVariable("id") Integer id, @RequestBody Insurance insuranceDetails, Principal connectedUser) {
         // Récupérer l'assurance existante par son identifiant
         Insurance existingInsurance = insuranceService.getInsuranceById(id);
@@ -75,6 +84,7 @@ public class InsuranceController {
             }
         } else {
             // Si l'assurance n'existe pas, retourner une réponse d'erreur 404
+
             return ResponseEntity.notFound().build();
         }
     }

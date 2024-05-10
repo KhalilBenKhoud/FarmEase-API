@@ -1,6 +1,8 @@
 package com.pi.farmease.controllers;
 
+
 import com.pi.farmease.dao.SinisterRepository;
+
 import com.pi.farmease.entities.Sinister;
 import com.pi.farmease.services.SinisterService;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +16,16 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+
 @RequestMapping("/api/v1/sinisters")
+
 @RequiredArgsConstructor
 public class SinisterController {
 
     private final SinisterService sinisterService;
+
     private final SinisterRepository sinisterRepository;
+
 
     @GetMapping
     public ResponseEntity<List<Sinister>> getAllSinisters() {
@@ -27,11 +33,13 @@ public class SinisterController {
         return ResponseEntity.ok(sinisters);
     }
 
+
     @GetMapping("/byInsurance/{insuranceId}")
     public ResponseEntity<List<Sinister>> getSinistersByInsuranceId(@PathVariable int insuranceId) {
         List<Sinister> sinisters = sinisterService.getSinistersByInsuranceId(insuranceId);
         return ResponseEntity.ok(sinisters);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Sinister> getSinisterById(@PathVariable("id") Integer id) {
@@ -42,6 +50,7 @@ public class SinisterController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     @PostMapping("/add/{insuranceId}")
     public ResponseEntity<Sinister> createSinister(@RequestBody Sinister sinister, @PathVariable int insuranceId) {
@@ -60,6 +69,7 @@ public class SinisterController {
    //         return ResponseEntity.notFound().build();
     //    }
    // }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSinister(@PathVariable("id") Integer id) {
@@ -91,6 +101,7 @@ public class SinisterController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload picture");
         }
     }
+
 
     @GetMapping("/date/{month}")
     public ResponseEntity<String> getSinistersStatisticsByDate(@PathVariable("month") int month) {

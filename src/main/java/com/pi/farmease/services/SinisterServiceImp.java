@@ -1,11 +1,13 @@
 package com.pi.farmease.services;
 
+
 import com.pi.farmease.dao.InsuranceRepository;
 import com.pi.farmease.entities.Insurance;
 import com.pi.farmease.entities.Sinister;
 import com.pi.farmease.dao.SinisterRepository;
 import com.pi.farmease.entities.enumerations.StatusSinister;
 import jakarta.persistence.EntityNotFoundException;
+
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
 import java.util.Optional;
+
 import java.util.UUID;
 
 @Service
@@ -24,6 +28,7 @@ import java.util.UUID;
 public class SinisterServiceImp implements SinisterService {
 
     private final SinisterRepository sinisterRepository;
+
     private final InsuranceRepository insuranceRepository;
     private static final String UPLOAD_DIR = "uploads/Sinisters/";
     private static final List<String> FORBIDDEN_WORDS = List.of("gros_mot1", "gros_mot2", "gros_mot3");
@@ -35,14 +40,17 @@ public class SinisterServiceImp implements SinisterService {
         Insurance concerned = insuranceRepository.findById(insuranceId).orElse(null) ;
         sinister.setInsurance(concerned);
         sinister.setStatus(StatusSinister.UNDER_REVIEW);
+
         return sinisterRepository.save(sinister);
     }
 
     @Override
     public Sinister updateSinister(Sinister sinister) {
+
         if (containsForbiddenWords(sinister.getDescription())) {
             throw new IllegalArgumentException("La description contient des mots interdits.");
         }
+
         return sinisterRepository.save(sinister);
     }
 
@@ -62,10 +70,12 @@ public class SinisterServiceImp implements SinisterService {
     }
 
     @Override
+
     public List<Sinister> getSinistersByInsuranceId(int insuranceId) {
         return sinisterRepository.findByInsuranceId(insuranceId);
     }
     @Override
+
     public String savePhoto(MultipartFile file) throws IOException {
         // Create a unique file name to prevent conflicts
         String fileName = generateUniqueFileName(file.getOriginalFilename());
@@ -97,6 +107,7 @@ public class SinisterServiceImp implements SinisterService {
         }
     }
 
+
     // Méthode pour vérifier si la description contient des gros mots
     public boolean containsForbiddenWords(String description) {
         for (String word : FORBIDDEN_WORDS) {
@@ -122,4 +133,5 @@ public class SinisterServiceImp implements SinisterService {
     public List<Object[]> findAllSinisterCoordinates(){
         return sinisterRepository.findAllSinisterCoordinates();
     }
+
 }
