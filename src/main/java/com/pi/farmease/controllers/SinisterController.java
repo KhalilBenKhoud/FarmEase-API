@@ -1,5 +1,8 @@
 package com.pi.farmease.controllers;
 
+
+import com.pi.farmease.dao.SinisterRepository;
+
 import com.pi.farmease.entities.Sinister;
 import com.pi.farmease.services.SinisterService;
 import lombok.RequiredArgsConstructor;
@@ -13,17 +16,30 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sinisters")
+
+@RequestMapping("/api/v1/sinisters")
+
 @RequiredArgsConstructor
 public class SinisterController {
 
     private final SinisterService sinisterService;
+
+    private final SinisterRepository sinisterRepository;
+
 
     @GetMapping
     public ResponseEntity<List<Sinister>> getAllSinisters() {
         List<Sinister> sinisters = sinisterService.getAllSinisters();
         return ResponseEntity.ok(sinisters);
     }
+
+
+    @GetMapping("/byInsurance/{insuranceId}")
+    public ResponseEntity<List<Sinister>> getSinistersByInsuranceId(@PathVariable int insuranceId) {
+        List<Sinister> sinisters = sinisterService.getSinistersByInsuranceId(insuranceId);
+        return ResponseEntity.ok(sinisters);
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Sinister> getSinisterById(@PathVariable("id") Integer id) {
@@ -35,23 +51,25 @@ public class SinisterController {
         }
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Sinister> createSinister(@RequestBody Sinister sinister) {
-        Sinister createdSinister = sinisterService.saveSinister(sinister);
+
+    @PostMapping("/add/{insuranceId}")
+    public ResponseEntity<Sinister> createSinister(@RequestBody Sinister sinister, @PathVariable int insuranceId) {
+        Sinister createdSinister = sinisterService.saveSinister(sinister, insuranceId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSinister);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Sinister> updateSinister(@PathVariable("id") Integer id, @RequestBody Sinister sinisterDetails) {
-        Sinister existingSinister = sinisterService.getSinisterById(id);
-        if (existingSinister != null) {
-            sinisterDetails.setId(id);
-            Sinister updatedSinister = sinisterService.updateSinister(sinisterDetails);
-            return ResponseEntity.ok(updatedSinister);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    //@PutMapping("/{id}")
+    //public ResponseEntity<Sinister> updateSinister(@PathVariable("id") Integer id, @RequestBody Sinister sinisterDetails) {
+    //    Sinister existingSinister = sinisterService.getSinisterById(id);
+   //     if (existingSinister != null) {
+    //        sinisterDetails.setId(id);
+    //        Sinister updatedSinister = sinisterService.updateSinister(sinisterDetails);
+    //        return ResponseEntity.ok(updatedSinister);
+     //   } else {
+   //         return ResponseEntity.notFound().build();
+    //    }
+   // }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSinister(@PathVariable("id") Integer id) {
@@ -83,4 +101,39 @@ public class SinisterController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload picture");
         }
     }
+
+
+    @GetMapping("/date/{month}")
+    public ResponseEntity<String> getSinistersStatisticsByDate(@PathVariable("month") int month) {
+        List<Sinister> sinisters = sinisterRepository.getSinistersByDate_Sinister(month);
+        Double totalAmount = sinisterRepository.getTotalAmountByMonth(month);
+        if (!sinisters.isEmpty()) {
+            String message = String.format("Le nombre de sinistres du mois %d est %d, et la somme des montants est %.2f",
+                    month, sinisters.size(), totalAmount != null ? totalAmount : 0.0);
+            return ResponseEntity.ok(message);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/findAllSinisterCoordinates")
+    public List<Object[]> findAllSinisterCoordinates() {
+        return sinisterService.findAllSinisterCoordinates();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Sinister> updateSinister(@PathVariable("id") Integer id, @RequestBody Sinister sinisterDetails) {
+        Sinister existingSinister = sinisterService.getSinisterById(id);
+        if (existingSinister != null) {
+            try {
+                Sinister updatedSinister = sinisterService.updateSinister(sinisterDetails);
+                return ResponseEntity.ok(updatedSinister);
+            } catch (IllegalArgumentException e) {
+                // If the description contains forbidden words
+                return ResponseEntity.badRequest().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

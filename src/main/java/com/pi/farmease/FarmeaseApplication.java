@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableScheduling
@@ -35,4 +36,9 @@ public class FarmeaseApplication {
 //        userRepository.save(admin) ;
 //    }
 
+    // Configurer RestTemplate en tant que bean
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

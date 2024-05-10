@@ -30,6 +30,10 @@ public class Sinister {
     @Enumerated(EnumType.STRING)
     private StatusSinister status ;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Location address;
+
+
     @ManyToOne
     private Insurance insurance;
 }

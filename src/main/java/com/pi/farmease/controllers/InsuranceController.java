@@ -10,11 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.security.Principal;
+
 import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/insurances")
+
+@RequestMapping("/api/v1/insurances")
+
 @RequiredArgsConstructor
 public class InsuranceController {
 
@@ -27,6 +32,20 @@ public class InsuranceController {
         return ResponseEntity.ok(insurances);
     }
 
+
+    @GetMapping("/insurancesByUser")
+    public ResponseEntity<List<Insurance>> getInsurancesByCurrentUser(Principal connectedUser) {
+        // Récupérer les assurances de l'utilisateur connecté en utilisant le service InsuranceService
+        try {
+            List<Insurance> insurances = insuranceService.getInsurancesByCurrentUser(connectedUser);
+            return ResponseEntity.ok(insurances);
+        } catch (IllegalArgumentException e) {
+            // Si aucun utilisateur n'est connecté, retourner une réponse d'erreur 401 (non autorisé)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Insurance> getInsuranceById(@PathVariable("id") Integer id) {
         Insurance insurance = insuranceService.getInsuranceById(id);
@@ -37,21 +56,35 @@ public class InsuranceController {
         }
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Insurance> createInsurance(@RequestBody Insurance insurance) {
-        System.out.println(insurance.getCoverage_amount()+": "+insurance.getUser());
-        Insurance createdInsurance = insuranceService.saveInsurance(insurance);
+
+    @PostMapping("/add/{duration}")
+    public ResponseEntity<Insurance> createInsurance(@RequestBody Insurance insurance,@PathVariable int duration , Principal connectedUser) {
+        if (connectedUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Insurance createdInsurance = insuranceService.saveInsurance(insurance, connectedUser , duration);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInsurance);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Insurance> updateInsurance(@PathVariable("id") Integer id, @RequestBody Insurance insuranceDetails) {
+
+    public ResponseEntity<Insurance> updateInsurance(@PathVariable("id") Integer id, @RequestBody Insurance insuranceDetails, Principal connectedUser) {
+        // Récupérer l'assurance existante par son identifiant
         Insurance existingInsurance = insuranceService.getInsuranceById(id);
         if (existingInsurance != null) {
-            insuranceDetails.setId(id);
-            Insurance updatedInsurance = insuranceService.updateInsurance(insuranceDetails);
-            return ResponseEntity.ok(updatedInsurance);
+            // Vérifier si l'utilisateur connecté est autorisé à modifier cette assurance
+            try {
+                Insurance updatedInsurance = insuranceService.updateInsurance(insuranceDetails, connectedUser);
+                return ResponseEntity.ok(updatedInsurance);
+            } catch (IllegalArgumentException e) {
+                // Si l'utilisateur n'est pas autorisé, retourner une réponse d'erreur
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
         } else {
+            // Si l'assurance n'existe pas, retourner une réponse d'erreur 404
+
             return ResponseEntity.notFound().build();
         }
     }

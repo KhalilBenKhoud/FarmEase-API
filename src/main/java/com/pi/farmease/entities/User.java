@@ -24,7 +24,6 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class User implements UserDetails {
 
     @Id
@@ -64,6 +63,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Application> applications ;
 
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<Insurance> insurances ;
 
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Credit> credit;

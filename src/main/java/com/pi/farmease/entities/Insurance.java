@@ -6,6 +6,9 @@ import com.pi.farmease.entities.enumerations.TypeInsurance;
 import jakarta.persistence.*;
 import lombok.*;
 
+
+import java.time.LocalDate;
+
 import java.util.Date;
 import java.util.List;
 
@@ -21,8 +24,10 @@ public class Insurance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
 
-    private Date start_date ;
-    private  Date end_date ;
+
+    private LocalDate start_date ;
+    private  LocalDate end_date ;
+
     private  double coverage_amount;
     private  double premium;
     @Enumerated(EnumType.STRING)
