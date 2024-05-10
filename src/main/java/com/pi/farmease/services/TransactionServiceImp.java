@@ -6,6 +6,7 @@ import com.pi.farmease.dao.TransactionRepository;
 import com.pi.farmease.entities.Transaction;
 import com.pi.farmease.entities.User;
 import com.pi.farmease.entities.Wallet;
+import com.pi.farmease.entities.enumerations.TransactionType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -63,14 +64,14 @@ public class TransactionServiceImp implements  TransactionService {
         Transaction saleTransaction = Transaction.builder()
                 .description("Achat de produits")
                 .issuedAt(new Date())
-                .type(Transaction.TransactionType.SALE)
+                .type(TransactionType.SALE)
                 .recipient(user)
                 .amount(amount)
                 .build();
         add(saleTransaction);
     }
     public List<Transaction> getAllSaleTransactions() {
-        return transactionRepository.findByType(Transaction.TransactionType.SALE);
+        return transactionRepository.findByType(TransactionType.SALE);
     }
 
 }

@@ -19,7 +19,7 @@ public class AdminUserServiceImp implements AdminUserService{
 
     @Override
     public void banUser(Integer id) {
-        User concernedUser = userRepository.findById(id).orElse(null) ;
+        User concernedUser = userRepository.findById(id.longValue()).orElse(null) ;
 
         if(concernedUser == null)  throw new RuntimeException("user doesn't exist") ;
         if(!concernedUser.isEnabled()) throw new RuntimeException("user already banned") ;
@@ -29,7 +29,7 @@ public class AdminUserServiceImp implements AdminUserService{
     }
     @Override
     public void permitUser(Integer id) {
-        User concernedUser = userRepository.findById(id).orElse(null) ;
+        User concernedUser = userRepository.findById(id.longValue()).orElse(null) ;
         if(concernedUser == null)  throw new RuntimeException("user doesn't exist") ;
         if(concernedUser.isEnabled()) throw new RuntimeException("user already enabled") ;
         concernedUser.setEnabled(true);
