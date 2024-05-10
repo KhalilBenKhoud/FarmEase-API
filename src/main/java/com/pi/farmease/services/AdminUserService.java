@@ -16,4 +16,5 @@ public interface AdminUserService {
     public List<User> getAll() ;
 
     public List<User> getSortedByMoney() ;
+
 }

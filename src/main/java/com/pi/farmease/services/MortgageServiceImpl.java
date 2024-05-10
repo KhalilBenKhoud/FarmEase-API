@@ -1,6 +1,11 @@
 package com.pi.farmease.services;
 
+import com.pi.farmease.dao.GroundRepository;
+import com.pi.farmease.dao.MaterielRepository;
 import com.pi.farmease.dao.MortgageRepository;
+import com.pi.farmease.dto.requests.MortgageRequest;
+import com.pi.farmease.entities.Ground;
+import com.pi.farmease.entities.Materiel;
 import com.pi.farmease.entities.Mortgage;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +13,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -19,7 +22,10 @@ public class MortgageServiceImpl implements MortgageService {
 
     @Autowired
     private final UserService userService;
+
     private final MortgageRepository mortgageRepository;
+    private final GroundRepository groundrepository;
+private final MaterielRepository materielRepository;
     private final String clientId = "78qih6a4job42o";
     private final String clientSecret = "3tjxxbisUnpxCiUx";
     private static final String PERSON_URN = "78qih6a4job42o";
@@ -28,44 +34,102 @@ public class MortgageServiceImpl implements MortgageService {
     private final String accessToken = "AQU0dbEyWUjLQIZfg9UNr_ltDrCgh5cPElO4MuWEJ_ZUqMhvZtDubv1jomby78BySmRn3i-QyTwLVIiPMuh3AhDoT1KowEPzsvFNW372Ls8ecCK8ACa8kCmnUENfpzE6x_ooDshDa6mjOjRqrpl9ebCEAnqANZZUTWyq3h3iWCuq4vpkPLTy0VjM1nS75Ium9KaNRyMBiHunqjCYiZVD7pNAHf-2YGSqqj9aNZIkhCpsqWIFXfqQ7PMku40o1PaNX827PyRJr6PfSRXQewg8Sbdwc9gkoOnOPrtsK4C4gnF-CZ6rpePjXKCYscFhxLkksmZhJQd_9kQDQgERd-m9LzfGfnusMA";
 
     @Override
-    public void addMortgage(Mortgage requestBody) {
+    public void addMortgage(MortgageRequest requestBody) {
         // Get the values from the request body
         long durationMortgage = requestBody.getDuration_mortgage();
-        double priceMortgage = requestBody.getPrice_mortgage();
+        System.out.println(requestBody);
+        List<Long> materiels = requestBody.getMateriels();
+        float prixmat = 0.0f;
+        int landDescriptionInt = Integer.parseInt(requestBody.getLand_description());
+double priceland= landDescriptionInt*requestBody.getPrize_mortgage();
 
+        for (long materiel_id : requestBody.getMateriels()) {
+            Materiel materiel = materielRepository.findById(materiel_id).orElse(null);
+            if( materiel != null) {
+                prixmat += materiel.getPrice_materiel();
+            }
+        }
+
+
+
+        double priceMortgage = prixmat+priceland ;
+        priceMortgage=   priceMortgage*requestBody.getInterest();
         // Calculate the month_payment
         double monthPayment = priceMortgage / (durationMortgage * 12);
 
-        // Apply conditions based on duration_mortgage
-        if (durationMortgage == 1) {
-            // Increase priceMortgage by 8% if durationMortgage is 1
-            priceMortgage += priceMortgage * 0.08;
-        } else if (durationMortgage == 2) {
-            // Increase priceMortgage by 13% if durationMortgage is 2
-            priceMortgage += priceMortgage * 0.13;
-        } else if (durationMortgage == 3) {
-            // Increase priceMortgage by 18% if durationMortgage is 3
-            priceMortgage += priceMortgage * 0.18;
-        }
+        long longPriceMortgage = Long.parseLong(String.valueOf(priceMortgage).replace(".", ""));
 
         // Build the Mortgage object
         Mortgage mortgage = Mortgage.builder()
                 .description_mortgage(requestBody.getDescription_mortgage())
                 .duration_mortgage(durationMortgage)
-                .prize_mortgage(priceMortgage)
+                .prize_mortgage(requestBody.getPrize_mortgage())
                 .month_payment(monthPayment)
                 .category_mortgage(requestBody.getCategory_mortgage())
                 .type_mortgage(requestBody.getType_mortgage())
-                .price_mortgage(requestBody.getPrice_mortgage())
-                .applications(requestBody.getApplications())
+                .price_mortgage( longPriceMortgage)
+                .land_description(requestBody.getLand_description())
+                .rating_mortgage(0) // Set the rating field to 0
+                .interest(requestBody.getInterest())
                 .build();
 
         // Save the mortgage in the database
         mortgageRepository.save(mortgage);
 
 
-        postOnLinkedIn("test");
+       // postOnLinkedIn("test");
     }
+    @Override
+    public void updateMortgageRating(Long id, double rate) {
+        // Rechercher le mortgage par son ID
+        Optional<Mortgage> mortgageOptional = mortgageRepository.findById(id);
+        if (mortgageOptional.isPresent()) {
+            Mortgage mortgage = mortgageOptional.get();
+
+            // Vérifier si rating_mortgage est égal à 0
+            if (mortgage.getRating_mortgage() == 0) {
+                // Si rating_mortgage est égal à 0, attribuer rate directement
+                mortgage.setRating_mortgage(rate);
+            } else {
+                // Si rating_mortgage est supérieur à 0, calculer la moyenne entre l'ancien rating et le nouveau
+                double oldRating = mortgage.getRating_mortgage();
+                double newRating = (oldRating + rate) / 2;
+                mortgage.setRating_mortgage(newRating);
+            }
+
+            // Enregistrer la mise à jour dans la base de données
+            mortgageRepository.save(mortgage);
+        }
+        }
+    @Override
+    public List<Ground> getAllGroundsplace() {
+        try {
+
+            // Récupérer toutes les instances de Ground depuis la base de données
+            List<Ground> allGrounds = groundrepository.findAll();
+
+            // Extraire les valeurs uniques de place_ground
+            /*
+            List<String> uniquePlaceGrounds = allGrounds.stream()
+                    .map(Ground::getPlace_ground)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            return uniquePlaceGrounds;
+            */
+             return allGrounds;
+        } catch( Exception e)
+        { e.printStackTrace() ;return null ; }
+
+
+    }
+
+
+    @Override
+    public List<Materiel> getAllMateriels() {
+        return materielRepository.findAll();
+    }
+
     @Override
     public void postOnLinkedIn(String shareCommentary) {shareCommentary="test";
         HttpHeaders headers = new HttpHeaders();
@@ -160,6 +224,8 @@ postContent="post";
     @Override
     public void deleteMortgage(Long id) {
         mortgageRepository.deleteById(id);
+
+
     }
 
  /*   public void sharePostOnLinkedIn(String accessToken, String linkedinUserId, String postContent) {

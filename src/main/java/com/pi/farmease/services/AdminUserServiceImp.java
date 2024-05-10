@@ -1,5 +1,6 @@
 package com.pi.farmease.services;
 
+import com.pi.farmease.dao.UserRepository;
 import com.pi.farmease.dao.ResetPasswordTokenRepository;
 import com.pi.farmease.dao.UserRepository;
 import com.pi.farmease.dao.VerifyAccountTokenRepository;
@@ -22,6 +23,7 @@ import static java.util.Locale.filter;
 public class AdminUserServiceImp implements AdminUserService{
 
      private final UserRepository userRepository ;
+
     @Override
     public List<User> getAll()  {
         return  userRepository.findAll() ;
@@ -41,6 +43,7 @@ public class AdminUserServiceImp implements AdminUserService{
     public void banUser(Integer id) {
         User concernedUser = userRepository.findById(id.longValue()).orElse(null) ;
 
+
         if(concernedUser == null)  throw new RuntimeException("user doesn't exist") ;
         if(!concernedUser.isEnabled()) throw new RuntimeException("user already banned") ;
         concernedUser.setEnabled(false);
@@ -49,7 +52,9 @@ public class AdminUserServiceImp implements AdminUserService{
     }
     @Override
     public void permitUser(Integer id) {
+
         User concernedUser = userRepository.findById(id.longValue()).orElse(null) ;
+
         if(concernedUser == null)  throw new RuntimeException("user doesn't exist") ;
         if(concernedUser.isEnabled()) throw new RuntimeException("user already enabled") ;
         concernedUser.setEnabled(true);

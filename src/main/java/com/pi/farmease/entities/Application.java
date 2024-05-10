@@ -1,6 +1,7 @@
 package com.pi.farmease.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,10 +22,10 @@ public class Application {
     private String etat_application;
     private String message_application;
 
-
-    @ToString.Exclude
     @ManyToOne
+    @JsonIgnore
     Mortgage mortgage;
+
     @ManyToOne
     @JsonBackReference
     private User user ;
