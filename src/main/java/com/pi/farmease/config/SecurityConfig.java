@@ -48,6 +48,7 @@ public class SecurityConfig  implements WebMvcConfigurer {
 
 
     @Bean
+
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
       http.csrf(AbstractHttpConfigurer::disable)
@@ -88,6 +89,7 @@ public class SecurityConfig  implements WebMvcConfigurer {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
+
 
     }
 
