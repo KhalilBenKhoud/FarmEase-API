@@ -29,7 +29,7 @@ public class WalletServiceImp implements WalletService{
 
         for(Wallet wallet : listOfWallets) {
             // newBalance = current balance * (1 + (interestRate / compoundingFrequency));
-            double newBalance = wallet.getBalance() * (1 + 0.005 / 12) ;
+            double newBalance = wallet.getBalance() * (1 + 0.0005 / 12) ;
             wallet.setBalance(newBalance);
         }
 

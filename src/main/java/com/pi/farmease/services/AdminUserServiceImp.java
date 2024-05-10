@@ -1,7 +1,11 @@
 package com.pi.farmease.services;
 
+import com.pi.farmease.dao.ResetPasswordTokenRepository;
 import com.pi.farmease.dao.UserRepository;
+import com.pi.farmease.dao.VerifyAccountTokenRepository;
+import com.pi.farmease.entities.ResetPasswordToken;
 import com.pi.farmease.entities.User;
+import com.pi.farmease.entities.VerifyAccountToken;
 import com.pi.farmease.entities.enumerations.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,11 +15,27 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Locale.filter;
+
 @Service
 @RequiredArgsConstructor
 public class AdminUserServiceImp implements AdminUserService{
 
      private final UserRepository userRepository ;
+    @Override
+    public List<User> getAll()  {
+        return  userRepository.findAll() ;
+    }
+    public List<User> getSortedByMoney() {
+        List<User> list =  userRepository.findAll() ;
+        Comparator<User> comparator = Comparator.comparing(user -> user.getWallet().getBalance());
+
+        return list.stream().
+                filter(user -> user.getRole() != Role.ADMIN)
+                .sorted(comparator)
+                .collect(Collectors.toList()) ;
+
+    }
 
     @Override
     public void banUser(Integer id) {

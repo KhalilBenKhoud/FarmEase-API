@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,11 +20,23 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "*")
+
 public class UserController {
 
     private final UserService userService ;
+    private final PasswordEncoder passwordEncoder ;
+    @PostMapping("encodePaasword")
+    public ResponseEntity<?> encode(@RequestBody String password) {
+        String decoded ;
+        try {
+            decoded = passwordEncoder.encode(password) ;
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
 
+        }
+        return ResponseEntity.ok().body(new MessageResponse(decoded)) ;
+
+    }
     @GetMapping("/current")
     public ResponseEntity<?> getCurrent(Principal connectedUser) {
         final User responseBody ;
@@ -42,7 +55,7 @@ public class UserController {
         }catch(Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
         }
-        return ResponseEntity.ok().body( new MessageResponse("User updated successfully !")) ;
+        return ResponseEntity.ok().body(  new MessageResponse("User updated successfully !")) ;
     }
 
     @DeleteMapping("/current")
@@ -50,9 +63,10 @@ public class UserController {
         try {
             userService.deleteCurrentUser(connectedUser);
         }catch(Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
         }
-        return ResponseEntity.ok().body("User deleted successfully !") ;
+        return ResponseEntity.ok().body(new MessageResponse("User updated successfully !")) ;
     }
 
     @PostMapping("/current/image")
@@ -63,7 +77,7 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
         }
-        return ResponseEntity.ok().body("profile image added successfully !") ;
+        return ResponseEntity.ok().body(new MessageResponse("User updated successfully !")) ;
     }
 
     @GetMapping("/current/image")
@@ -80,15 +94,13 @@ public class UserController {
     }
 
     @PutMapping("/current/image")
-    public ResponseEntity<?> updateProfileImage(@RequestBody  MultipartFile imageFile, Principal connectedUser)   {
+    public ResponseEntity<?> updateProfileImage(@RequestBody  MultipartFile imageFile, Principal connectedUser) {
         try {
-            userService.updateProfileImage(imageFile,connectedUser);
-        }catch (Exception e) {
+            userService.updateProfileImage(imageFile, connectedUser);
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
-        return ResponseEntity.ok().body(new MessageResponse("profile image updated successfully !")) ;
+        return ResponseEntity.ok().body(new MessageResponse("image updated !")) ;
     }
-
-
 }
