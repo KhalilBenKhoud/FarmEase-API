@@ -7,6 +7,7 @@ import com.pi.farmease.services.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +44,20 @@ public class AdminUserController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage())) ;
         }
         return ResponseEntity.ok().body(user);
+    }
+
+    @GetMapping("/sortedByDate")
+    public List<User> usersSortedByRegistrationDate() {
+        return adminUserService.usersSortedByRegistrationDate();
+    }
+
+    @GetMapping("/all")
+    public List<User> getAll() {
+        return adminUserService.getAll();
+    }
+    @GetMapping("/sortedByMoney")
+    public List<User> getSortedByMoney() {
+        return adminUserService.getSortedByMoney();
     }
 
     @GetMapping("/wealthDistributionIndex")

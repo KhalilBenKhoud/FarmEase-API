@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -23,11 +24,19 @@ public class CartServiceImpl implements CartService {
     TransactionService transactionService ;
     CouponRepository couponRepository;
     EmailService emailService ;
+    UserService userService ;
 
+    public Double getTotalCartPrice(Principal connected) {
+        User user = userService.getCurrentUser(connected) ;
+        Cart cart = cartRepository.findByUserId(user.getId());
+        // Implémentez la logique pour calculer le prix total du panier
+        Double totalPrice = cart.getTotalPrice() /* Logique pour calculer le prix total */;
+        return totalPrice;
+    }
 
-    public void addToCart(Long productId, Integer quantity, Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+    public void addToCart(Long productId, Integer quantity, Principal connected) {
+        User user = userService.getCurrentUser(connected) ;
+
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Produit non trouvé"));
@@ -68,11 +77,10 @@ public class CartServiceImpl implements CartService {
         productRepository.save(product);
     }
 
-    public void removeFromCartByProductId(Long productId, Integer userId) {
+    public void removeFromCartByProductId(Long productId, Principal connected) {
 
         // **Nouveau :** Obtient l'utilisateur à partir de son identifiant
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+        User user = userService.getCurrentUser(connected);
 
         // **Nouveau :** Obtient le panier de l'utilisateur
         Cart cart = user.getCart();
@@ -97,16 +105,6 @@ public class CartServiceImpl implements CartService {
 
         // **Nouveau :** Supprime l'élément de panier de la base de données
         cartItemsRepository.deleteById(cartItemToRemove.getCartItemsId());
-    }
-
-    @Override
-    public void addToCart(Long productId, Integer quantity, Long userId) {
-
-    }
-
-    @Override
-    public void removeFromCartByProductId(Long productId, Long userId) {
-
     }
 
     public void updateQuantity(Long cartItemId, Integer newQuantity) {
@@ -155,14 +153,14 @@ public class CartServiceImpl implements CartService {
 //        // Retourne la liste des éléments du panier
 //        return cartItems;
 //    }
-    @Override
-    public List<Map<String, Object>> retrieveCart(Long userId) {
+    public List<Map<String, Object>> retrieveCart(Principal connected) {
+        User user = userService.getCurrentUser(connected);
+        Integer userId = user.getId();
         Cart cart = cartRepository.findByUserId(userId);
-        Set<CartItems> cartItems = cart.getCartItems();
+        Set<CartItems> cartItems = cart != null ? cart.getCartItems() : new HashSet<>();
 
         List<Map<String, Object>> productList = new ArrayList<>();
         double cartPrice = 0.0;
-
 
         for (CartItems item : cartItems) {
             Product product = productRepository.findById(item.getProduct().getProductId()).orElse(null);
@@ -171,21 +169,23 @@ public class CartServiceImpl implements CartService {
                 Map<String, Object> productDetails = new HashMap<>();
                 productDetails.put("productName", product.getProductName());
                 productDetails.put("quantity", item.getCartItemsQuantity());
-                productDetails.put("unitPrice", item.getItemsPrice() / item.getCartItemsQuantity()); // Calculate unit price
+                productDetails.put("unitPrice", item.getItemsPrice() / item.getCartItemsQuantity());
                 productDetails.put("totalPrice", item.getItemsPrice());
+                productDetails.put("imageUrl", product.getProductImage()); // Ajoutez l'URL de l'image du produit
+                productDetails.put("productid", product.getProductId());
                 productList.add(productDetails);
 
                 cartPrice += item.getItemsPrice();
             } else {
-                // Handle missing product (log error, inform user, etc.)
+                // Handle missing product
                 System.out.println("Error: Product not found for cart item: " + item.getCartItemsId());
             }
         }
 
         // Add cart total as a separate item
-        Map<String, Object> cartPriceDetails = new HashMap<>();
-        cartPriceDetails.put("totalPrice", cartPrice);
-        productList.add(cartPriceDetails);
+//        Map<String, Object> cartPriceDetails = new HashMap<>();
+//        cartPriceDetails.put("cartPrice", cartPrice);
+   //     productList.add(cartPriceDetails);
 
         return productList;
     }
@@ -196,8 +196,9 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartItems> selectAll(Long userId) {
-        return cartItemsRepository.findAllByCartUserId(userId);
+    public List<CartItems> selectAll(Principal connected) {
+        User user = userService.getCurrentUser(connected) ;
+        return cartItemsRepository.findAllByCartUserId(user.getId());
     }
 
     @Override
@@ -207,9 +208,11 @@ public class CartServiceImpl implements CartService {
 
 
 
-    public List<Double> calculateMonthlyPrices(Long cartId, Integer numberOfMonths, Double downPayment) {
+    public List<Double> calculateMonthlyPrices(Principal connected, Integer numberOfMonths, Double downPayment) {
         List<Double> monthlyPrices = new ArrayList<>();
-        Cart cart = cartRepository.findById(cartId).orElse(null);
+        User user = userService.getCurrentUser(connected) ;
+
+        Cart cart = cartRepository.findById(user.getCart().getCartId()).orElse(null);
         Double v0 = cart.getTotalPrice() - downPayment; // Prix initial de la carte
         Double i = 0.05;
 
@@ -223,9 +226,10 @@ public class CartServiceImpl implements CartService {
         return monthlyPrices;
     }
     //////////////////////////////////////////COUPON
-    public void applyCouponToCart(Long cartId, String couponCode) {
+    public void applyCouponToCart(Principal connected, String couponCode) {
+        User user = userService.getCurrentUser(connected) ;
         // Récupérer le panier
-        Cart cart = cartRepository.findById(cartId).orElse(null);
+        Cart cart = cartRepository.findById(user.getCart().getCartId()).orElse(null);
         if (cart == null) {
             throw new IllegalArgumentException("Panier introuvable.");
         }
@@ -248,7 +252,8 @@ public class CartServiceImpl implements CartService {
 
 
 
-    public void confirmPurchase(User user) {
+    public void confirmPurchase(Principal connected) {
+        User user = userService.getCurrentUser(connected) ;
         try {
             Cart cart = user.getCart(); // Récupérer le panier de l'utilisateur
             double totalAmount = cart.getTotalPrice(); // Calculer le montant total du panier
@@ -262,7 +267,7 @@ public class CartServiceImpl implements CartService {
             Coupon coupon = saveCoupon(couponCode);
 
             // Envoyer un e-mail de confirmation d'achat avec le code coupon
-            sendConfirmationEmail(user, cart, coupon);
+            sendConfirmationEmail(connected, cart, coupon);
             transactionService.saveSaleTransaction(user,totalAmount);
 
         } catch (RuntimeException e) {
@@ -287,7 +292,8 @@ public class CartServiceImpl implements CartService {
     }
 
 
-    public void sendConfirmationEmail(User user, Cart cart, Coupon coupon) {
+    public void sendConfirmationEmail(Principal connected, Cart cart, Coupon coupon) {
+        User user = userService.getCurrentUser(connected) ;
         String userEmail = user.getEmail();
         String subject = "Confirmation d'achat et code coupon";
 

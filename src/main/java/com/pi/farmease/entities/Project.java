@@ -1,7 +1,9 @@
 package com.pi.farmease.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pi.farmease.entities.enumerations.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -59,11 +61,11 @@ public class Project implements Serializable {
     
     @ManyToOne
     @JoinColumn(name = "creator_id")
-    @JsonIgnore
+    @JsonBackReference
     private User creator;
 
     @OneToMany(mappedBy = "project")
-    @JsonIgnore
+    @JsonManagedReference
     private List<Investment> investments;
 
 

@@ -1,8 +1,12 @@
 package com.pi.farmease.controllers;
 
 
+import com.pi.farmease.dto.responses.MessageResponse;
+import com.pi.farmease.entities.Notification;
 import com.pi.farmease.entities.Product;
 import com.pi.farmease.entities.User;
+import com.pi.farmease.services.LikeService;
+import com.pi.farmease.services.NotificationSer;
 import com.pi.farmease.services.ProductService;
 import com.pi.farmease.services.UserService;
 import lombok.AllArgsConstructor;
@@ -11,23 +15,30 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/product")
+@RequestMapping("/api/v1/product")
 @CrossOrigin(origins = "http://localhost:4200")
 
 public class ProductController {
 
     private ProductService iProductService;
     UserService userService;
-
+    NotificationSer notificationSer ;
+LikeService likeService ;
     //admin
     @GetMapping("/allProduct")
     public List<Product> getAllProductsAdmin() {
         return iProductService.selectAll();
+    }
+    @GetMapping("/allnotification")
+    public List<Notification> getAllNotification() {
+        return notificationSer.selectAll();
     }
 
     @PostMapping("/addProduct")
@@ -51,25 +62,27 @@ public class ProductController {
  catch (Exception e){
      return ResponseEntity.badRequest().body(e.getMessage());
  }
- return ResponseEntity.ok().body("produit ajouter");
+ return ResponseEntity.ok().body(new MessageResponse("prduit ajouté"));
     }
 
 
 
 
 
-    @PutMapping("editProduct")
-    public Product editProduct(@RequestBody Product p) {
+    @PutMapping("/edit/{productId}")
+    public ResponseEntity<Product> editProduct(@PathVariable Long productId, @RequestBody Product updatedProduct){
 
-        return iProductService.edit(p);
+        Product editedProduct = iProductService.edit(productId, updatedProduct);
+        // Retourner une réponse avec le produit modifié et le statut OK
+        return ResponseEntity.ok(editedProduct);
     }
 //////////////////////
 
 
 
-    @DeleteMapping("deleteProductById/{id}")
-    public List<Product> deletebyid(@PathVariable Long id) {
-        iProductService.deleteById(id);
+    @DeleteMapping("deleteProductById/{productId}")
+    public List<Product> deletebyid(@PathVariable Long productId) {
+        iProductService.deleteById(productId);
         return iProductService.selectAll();
     }
 
@@ -80,10 +93,10 @@ public class ProductController {
     }
 
 
-    @PostMapping("addLike/{userId}")
-    public Product toggleLikePack(@RequestBody Product product, @PathVariable Integer userId) {
-        User u = userService.getById(userId);
-        return iProductService.toggleLike(product, u);
+    @PostMapping("addLike/{productId}")
+    public Product toggleLikePack(@PathVariable Long productId, Principal connected) {
+
+        return iProductService.toggleLike(productId, connected );
 
     }
 
@@ -95,13 +108,13 @@ public class ProductController {
 
 
 
-    @GetMapping("/RetrieveProductByCategorie")
-    public List<Product> afficheravectypepay(@RequestParam Product.ProductCategory type) {
-        return iProductService.getProductsByCategory(type);
+    @GetMapping("/products/{category}")
+    public List<Product> getProductsByCategory(@PathVariable Product.ProductCategory category) {
+        return iProductService.getProductsByCategory(category);
     }
 
-    @GetMapping("/RetrieveProductByName")
-    public List<Product> afficherproductbyname(@RequestParam String name) {
+    @GetMapping("{name}")
+    public List<Product> getProductsByName(@PathVariable String name) {
         return iProductService.getProductsByName(name);
     }
     @GetMapping("/checkOutOfStock")
@@ -110,15 +123,23 @@ public class ProductController {
             return iProductService.getProductOutOfStock();
 
     }
-    @GetMapping("/priceRange")
-    public List<Product> getProductsInPriceRange(
-            @RequestParam(name = "minPrice") float minPrice,
-            @RequestParam(name = "maxPrice") float maxPrice) {
+    @GetMapping("/products/price/{minPrice}/{maxPrice}")
+    public List<Product> getProductsInPriceRange(@PathVariable float minPrice, @PathVariable float maxPrice) {
         return iProductService.findProductsInPriceRange(minPrice, maxPrice);
+    }
+    @GetMapping("/produits/trier/prix")
+    public List<Product> trierProduitsParPrix() {
+        return iProductService.trierProduitsParPrix();
     }
 
 
-
-
-
+    @GetMapping("/productLikes")
+    public ResponseEntity<Map<Long, Integer>> getProductLikes() {
+        Map<Long, Integer> likesByProduct = iProductService.countLikesByProduct();
+        return ResponseEntity.ok(likesByProduct);
+    }
+    @GetMapping("/products/likes")
+    public List<Product> getProductsRankedByLikes() {
+        return likeService.getProductsRankedByLikes();
+    }
 }

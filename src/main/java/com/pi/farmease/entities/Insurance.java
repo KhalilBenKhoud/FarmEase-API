@@ -1,10 +1,14 @@
 package com.pi.farmease.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pi.farmease.entities.enumerations.Role;
 import com.pi.farmease.entities.enumerations.StatusInsurance;
 import com.pi.farmease.entities.enumerations.TypeInsurance;
 import jakarta.persistence.*;
 import lombok.*;
+
+
+import java.time.LocalDate;
 
 import java.util.Date;
 import java.util.List;
@@ -21,8 +25,10 @@ public class Insurance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
 
-    private Date start_date ;
-    private  Date end_date ;
+
+    private LocalDate start_date ;
+    private  LocalDate end_date ;
+
     private  double coverage_amount;
     private  double premium;
     @Enumerated(EnumType.STRING)
@@ -32,9 +38,10 @@ public class Insurance {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "insurance")
     private List<Sinister> sinisters ;
 
 }

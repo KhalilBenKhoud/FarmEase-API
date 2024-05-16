@@ -1,6 +1,8 @@
 package com.pi.farmease.services;
 
+import com.pi.farmease.dao.ResetPasswordTokenRepository;
 import com.pi.farmease.dao.UserRepository;
+import com.pi.farmease.dao.VerifyAccountTokenRepository;
 import com.pi.farmease.dto.requests.UpdateUserRequest;
 import com.pi.farmease.entities.User;
 
@@ -9,7 +11,9 @@ import com.pi.farmease.entities.enumerations.Role;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,10 +30,15 @@ import java.security.Principal;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class UserServiceImp implements UserService{
 
     private final UserRepository userRepository ;
     private final AuthenticationService authenticationService ;
+   private final PasswordEncoder passwordEncoder ;
+    private final ResetPasswordTokenRepository resetPasswordTokenRepository ;
+
+    private  final VerifyAccountTokenRepository verifyAccountTokenRepository ;
 
 
     @Override
@@ -44,7 +53,8 @@ public class UserServiceImp implements UserService{
         if(updatedUser.getFirstname() != null) currentUser.setFirstname(updatedUser.getFirstname())  ;
         if(updatedUser.getLastname() != null) currentUser.setLastname(updatedUser.getLastname());
         if(updatedUser.getEmail() != null) currentUser.setEmail(updatedUser.getEmail());
-        if(updatedUser.getPassword() != null) currentUser.setPassword(updatedUser.getPassword());
+        if(updatedUser.getRole() != null) currentUser.setRole(updatedUser.getRole());
+        if(updatedUser.getPassword() != null) currentUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
 
         userRepository.save(currentUser) ;
     }
@@ -52,15 +62,18 @@ public class UserServiceImp implements UserService{
     @Override
     public void deleteCurrentUser(Principal connectedUser) {
         User currentUser = getCurrentUser(connectedUser) ;
+        verifyAccountTokenRepository.removeAllByUser(currentUser);
+        resetPasswordTokenRepository.removeAllByUser(currentUser);
         authenticationService.logout();
         userRepository.delete(currentUser);
     }
 
     @Override
     public String currentUploadDirectory( Principal connectedUser) {
-        User current = getCurrentUser(connectedUser);
 
-        return "src/main/resources/user_images/" + current.getId() + current.getFirstname();
+        User current = getCurrentUser(connectedUser) ;
+       return  "src/main/resources/user_images/"  + "user" +current.getId()  ;
+
     }
 
         @Override

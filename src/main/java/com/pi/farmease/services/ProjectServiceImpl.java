@@ -31,18 +31,18 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     @Override
-    public Project createProject(Project requestBody, MultipartFile imageUrl, Principal connected) throws IOException {
+    public Project createProject(Project requestBody, Principal connected) throws IOException {
         User connectedUser = userService.getCurrentUser(connected);
 
         // Upload project image
-        String uniqueImageFileName = UUID.randomUUID().toString() + "_" + imageUrl.getOriginalFilename();
-        String imageUploadDirectory = "src\\main\\resources\\image";
-        Path imageUploadPath = Path.of(imageUploadDirectory);
-        if (!Files.exists(imageUploadPath)) {
-            Files.createDirectories(imageUploadPath);
-        }
-        Path imageFilePath = imageUploadPath.resolve(uniqueImageFileName);
-        Files.copy(imageUrl.getInputStream(), imageFilePath, StandardCopyOption.REPLACE_EXISTING);
+//        String uniqueImageFileName = UUID.randomUUID().toString() + "_" + imageUrl.getOriginalFilename();
+//        String imageUploadDirectory = "src\\main\\resources\\image";
+//        Path imageUploadPath = Path.of(imageUploadDirectory);
+//        if (!Files.exists(imageUploadPath)) {
+//            Files.createDirectories(imageUploadPath);
+//        }
+//        Path imageFilePath = imageUploadPath.resolve(uniqueImageFileName);
+//        Files.copy(imageUrl.getInputStream(), imageFilePath, StandardCopyOption.REPLACE_EXISTING);
 
 //        // Upload CSV file
 //        String uniqueCsvFileName = UUID.randomUUID().toString() + "_" + csvFile.getOriginalFilename();
@@ -53,26 +53,28 @@ public class ProjectServiceImpl implements ProjectService {
 //        }
 //        Path csvFilePath = csvUploadPath.resolve(uniqueCsvFileName);
 //        Files.copy(csvFile.getInputStream(), csvFilePath, StandardCopyOption.REPLACE_EXISTING);
+        Project project = null ;
+        try {
+            // Create project entity
+             project = Project.builder()
+                    .creator(connectedUser)
+                    .createdAt(new Date())
+                    .title(requestBody.getTitle())
+                    .description(requestBody.getDescription())
+                    .deadline(requestBody.getDeadline())
+                    .netIncomeLastYear(requestBody.getNetIncomeLastYear())
+                    .equityOffered(requestBody.getEquityOffered())
+                    .goalAmount(requestBody.getGoalAmount())
+                    .projectCategory(requestBody.getProjectCategory())
+                    .build();
 
-        // Create project entity
-        Project project = Project.builder()
-                .creator(connectedUser)
-                .createdAt(new Date())
-                .title(requestBody.getTitle())
-                .description(requestBody.getDescription())
-                .deadline(requestBody.getDeadline())
-                .netIncomeLastYear(requestBody.getNetIncomeLastYear())
-                .equityOffered(requestBody.getEquityOffered())
-                .goalAmount(requestBody.getGoalAmount())
-                .projectCategory(requestBody.getProjectCategory())
-                .imageUrl(uniqueImageFileName)
-                .build();
+            // Save project entity
 
-        // Save project entity
-        projectRepository.save(project);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
 
-
-        return project;
+        return projectRepository.save(project);
     }
 
     @Override

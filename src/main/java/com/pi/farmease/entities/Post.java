@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,14 +29,14 @@ public class Post {
     private double stat1 ;
     private double stat2 ;
 
-    @JsonIgnore
-    @ToString.Exclude
-    @OneToMany(mappedBy = "post")
-    private Set<Comment> Commentaire;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Comment> Commentaire;
 
     @ManyToOne
     @JsonBackReference
     private User user ;
+
 
 
 

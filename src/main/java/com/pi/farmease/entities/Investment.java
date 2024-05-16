@@ -36,6 +36,7 @@ public class Investment implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "project_id")
+    @JsonBackReference
     private Project project;
 
 

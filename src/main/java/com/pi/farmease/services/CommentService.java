@@ -11,8 +11,8 @@ public interface CommentService {
 
     public Optional<Comment> getCommentById(long id_comment);
    // public boolean existByIdcomment(Long id_comment);
-
-
+   void deleteCommentsByPostId(Long postId);
+    List<Comment> getCommentsByPostId(Long postId);
     public void addComment(Comment requestBody, Long postId, Principal connected);
     //Comment updateComment(Comment comment);
 

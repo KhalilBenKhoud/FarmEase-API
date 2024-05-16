@@ -1,17 +1,11 @@
 package com.pi.farmease.services;
 
 
-import com.pi.farmease.dao.ResetPasswordTokenRepository;
-import com.pi.farmease.dao.UserRepository;
-import com.pi.farmease.dao.VerifyAccountTokenRepository;
-import com.pi.farmease.dao.WalletRepository;
+import com.pi.farmease.dao.*;
 import com.pi.farmease.dto.requests.AuthenticationRequest;
 import com.pi.farmease.dto.requests.RegisterRequest;
 import com.pi.farmease.dto.responses.AuthenticationResponse;
-import com.pi.farmease.entities.ResetPasswordToken;
-import com.pi.farmease.entities.User;
-import com.pi.farmease.entities.VerifyAccountToken;
-import com.pi.farmease.entities.Wallet;
+import com.pi.farmease.entities.*;
 import com.pi.farmease.entities.enumerations.WalletStatus;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.AddressException;
@@ -48,6 +42,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
 
     private final UserRepository userRepository ;
     private final WalletRepository walletRepository ;
+    private final CartRepository cartRepository ;
     private final PasswordEncoder passwordEncoder ;
     private final JwtService jwtService ;
     private final AuthenticationManager authenticationManager ;
@@ -72,10 +67,17 @@ public class AuthenticationServiceImp implements AuthenticationService {
                 .build() ;
         var wallet = Wallet.builder().user(user).ownerName(user.getFirstname()+" "+user.getLastname()).balance(1000)
                 .status(WalletStatus.ACTIVE).build() ;
+        Cart cart = new Cart();
+        cart.setCartName(user.getFirstname());
+        cart.setTotalPrice(0.0);
+        cart.setCouponCode(null);
+        user.setCart(cart);
         user.setWallet(wallet);
         userRepository.save(user) ;
+        cartRepository.save(cart);
         walletRepository.save(wallet) ;
         sendVerifyAccountEmail(user.getEmail());
+
     }
 
     public String createVerifyAccountToken( User concernedUser ) {
@@ -212,7 +214,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         String tokenValue = uuid.toString().substring(0,6) ;
         ResetPasswordToken token = ResetPasswordToken.builder()
                 .token(tokenValue)
-                .expiryDateTime(LocalDateTime.now().plusMinutes(2))
+                .expiryDateTime(LocalDateTime.now().plusMinutes(10))
                 .user(concernedUser)
                 .build() ;
        resetPasswordTokenRepository.save(token) ;
@@ -220,6 +222,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
     }
 
     public User verifyResetPasswordToken(String token) {
+
         ResetPasswordToken givenToken = resetPasswordTokenRepository.findByToken(token).orElse(null) ;
         if(givenToken != null) {
             LocalDateTime now = LocalDateTime.now();

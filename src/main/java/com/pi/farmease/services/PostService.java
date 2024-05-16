@@ -11,16 +11,18 @@ public interface PostService {
     public void addPost(Post post , Principal connected) ;
 
     List<Post> getPost();
-
-    public void updatePost(Post post, Long id) ;
-
-    public void deletePost(Long id) ;
+    void incrementStat2(Post post);
+    void incrementStat1(Post post);
+     void updatePost(Post post, Long id) ;
+    void incrementsignal(Long postId, Principal principal);
+    void banUser(Integer id);
+ void deletePost(Long id) ;
     List<Post> getPostsSortedByLikes();
 
     public boolean containsBadWords(Post post);
     public void calculateStatPercentage(Post post);
     void incrementLike(Post post);
-    void incrementSignal(Post post);
+
 
 
 }

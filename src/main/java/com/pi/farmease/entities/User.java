@@ -13,10 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -24,7 +21,6 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class User implements UserDetails {
 
     @Id
@@ -58,29 +54,31 @@ public class User implements UserDetails {
     private Wallet wallet ;
     @JsonManagedReference
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
-    private List<Post> posts ;
+    private List<Post> posts = new ArrayList<>();
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
-    private List<Comment> comments ;
+    private List<Comment> comments  = new ArrayList<>();
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
-    private List<Application> applications ;
-
-
-    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
-    private List<Credit> credit;
+    private List<Application> applications  = new ArrayList<>();
 
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
-    private List<Garantor> garantor;
+    @JsonIgnore
+    private List<Insurance> insurances  = new ArrayList<>();
 
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Credit> credit  = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    private List<Garantor> garantor  = new ArrayList<>();
+
+    @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)
     @JsonManagedReference
-    private List<Project> createdProjects;
+    private List<Project> createdProjects  = new ArrayList<>();
 
-    @OneToMany(mappedBy = "investor")
-    @JsonManagedReference
-    private List<Investment> investments;
+    @OneToMany(mappedBy = "investor", fetch = FetchType.EAGER)
 
-    @OneToMany(mappedBy = "user")
-    private List<Insurance> insurances ;
+    private List<Investment> investments  = new ArrayList<>();
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -112,11 +110,12 @@ public class User implements UserDetails {
         return enabled ;
     }
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private Set<Product> likedProduct;
     @JsonIgnore
     @OneToOne
     private Cart cart;
-
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<Product> Products;
 
 }

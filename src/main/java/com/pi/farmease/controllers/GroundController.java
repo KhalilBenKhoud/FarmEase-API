@@ -25,6 +25,7 @@ public class GroundController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<Ground> getGroundById(@PathVariable Long id) {
         Ground ground = groundService.getGroundById(id);

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface ProjectService {
 
-    Project createProject(Project project, MultipartFile imageUrl, Principal connected ) throws IOException;
+    Project createProject(Project project, Principal connected ) throws IOException;
 
     Optional<Project> getProjectById(Long id);
 

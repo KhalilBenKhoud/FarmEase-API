@@ -18,7 +18,7 @@ import java.util.List;
 @Controller
 @RestController
 @AllArgsConstructor
-@RequestMapping("/Garantor Loan")
+@RequestMapping("/api/v1")
 public class GarantorController {
     private final GarantorRepository garantorRepo ;
     private GarantorService garantorService ;

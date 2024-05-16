@@ -7,6 +7,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +19,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableScheduling
@@ -36,4 +42,9 @@ public class FarmeaseApplication {
 //        userRepository.save(admin) ;
 //    }
 
+    // Configurer RestTemplate en tant que bean
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

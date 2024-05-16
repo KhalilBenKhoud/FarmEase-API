@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -32,23 +33,33 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void addComment(Comment requestBody, Long postId, Principal connected) {
-        // Obtenez l'utilisateur connecté à partir de Principal
-        User connectedUser = userService.getCurrentUser(connected);
 
-        // Assurez-vous que l'ID de l'utilisateur est correctement défini dans le commentaire
-        requestBody.setUser(connectedUser);
+        try {
+            // Obtenez l'utilisateur connecté à partir de Principal
+            User connectedUser = userService.getCurrentUser(connected);
 
-        // Obtenez le post auquel le commentaire est associé
-        Optional<Post> postOptional = postRepository.findById(postId);
-        if (postOptional.isPresent()) {
-            Post associatedPost = postOptional.get();
-            requestBody.setPost(associatedPost);
+            // Assurez-vous que l'ID de l'utilisateur est correctement défini dans le commentaire
+            requestBody.setUser(connectedUser);
 
-            // Enregistrez ensuite le commentaire
-            commentrepository.save(requestBody);
-        } else {
-            throw new EntityNotFoundException("Post not found with ID: " + postId);
+            // Obtenez le post auquel le commentaire est associé
+            Optional<Post> postOptional = postRepository.findById(postId);
+            if (postOptional.isPresent()) {
+                Post associatedPost = postOptional.get();
+
+                requestBody.setPost(associatedPost);
+                requestBody.setDate_comment(LocalDate.now());
+                commentrepository.save(requestBody);
+                associatedPost.getCommentaire().add(requestBody);
+                // Enregistrez ensuite le commentaire
+
+                postRepository.save(associatedPost);
+            } else {
+                throw new EntityNotFoundException("Post not found with ID: " + postId);
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
         }
+
 
 }
    /* @Override
@@ -68,4 +79,22 @@ public class CommentServiceImpl implements CommentService {
     public void DeleteCommentaire(Long id_comment) {
         commentrepository.deleteById(id_comment);
     }*/
+@Override
+public void deleteCommentsByPostId(Long postId) {
+    // Récupérer tous les commentaires associés au post
+    List<Comment> commentsToDelete = commentrepository.findByPostId(postId);
+
+    // Supprimer chaque commentaire
+    for (Comment comment : commentsToDelete) {
+        commentrepository.delete(comment); System.out.println("2");
+
+    }
+}
+@Override
+public List<Comment> getCommentsByPostId(Long postId) {
+
+    return commentrepository.findByPostId(postId);
+
+
+}
 }

@@ -54,40 +54,18 @@ public class ProjectController {
 
     // Create a new project
     @PostMapping("/createProject")
-    public ResponseEntity<Project> createProject(
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam Double netIncomeLastYear,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageUrl,
-            @RequestParam String address,
-            @RequestParam Double goalAmount,
-            @RequestParam Date deadline,
-            @RequestParam Double equityOffered,
-            @RequestParam Double dividendPayoutRatio,
-            @RequestParam Double totalInvestment,
-            @RequestParam ProjectCategory projectCategory,
-            Principal connected) throws IOException {
+    public ResponseEntity<?> createProject ( @RequestBody Project projectBody, Principal connected) throws IOException {
 
-        Project project = Project.builder()
-                .title(title)
-                .description(description)
-                .netIncomeLastYear(netIncomeLastYear)
-                .address(address)
-                .goalAmount(goalAmount)
-                .deadline(deadline)
-                .equityOffered(equityOffered)
-                .dividendPayoutRatio(dividendPayoutRatio)
-                .totalInvestment(totalInvestment)
-                .projectCategory(projectCategory)
-                .projectStatus(ProjectStatus.PENDING) // Set default status
-                .createdAt(new Date())
-                .build();
-
-            Project savedProject = projectService.createProject(project,imageUrl,connected);
+  try {
 
 
+        projectService.createProject(projectBody, connected);
 
-        return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
+  }catch(Exception e) {
+      e.printStackTrace();
+  }
+
+        return  ResponseEntity.ok().build() ;
     }
 
     // Update a project

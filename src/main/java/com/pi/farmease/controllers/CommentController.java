@@ -1,6 +1,7 @@
 package com.pi.farmease.controllers;
 
 import com.pi.farmease.entities.Comment;
+import com.pi.farmease.entities.MessageResponse;
 import com.pi.farmease.services.CommentService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -30,17 +31,22 @@ public class CommentController {
                 ()->new EntityNotFoundException("Requested Comment not found")
         );
     }
-    @PostMapping("/Comment/add")
-    public ResponseEntity<String> addComment(Principal connected, @RequestBody Comment comment)
-    {long postid=1;
+    @PostMapping("/Comment/add/{id_post}")
+    public ResponseEntity<?> addComment(Principal connected, @RequestBody Comment comment, @PathVariable Long id_post)
+    {
 
         Comment responseBody ;
         try {
-            commentservice.addComment( comment,postid,connected) ;
+            commentservice.addComment( comment,id_post,connected) ;
         }catch(Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage()) ;
         }
-        return ResponseEntity.ok().body("Comment added !") ;
+        return ResponseEntity.ok().body(new MessageResponse("Comment added !")) ;
+    }
+    @GetMapping("/Comment/post/{postId}")
+    public List<Comment> getCommentsByPostId(@PathVariable Long postId) {
+        List<Comment> comments = commentservice.getCommentsByPostId(postId);
+        return comments;
     }
     }
 
